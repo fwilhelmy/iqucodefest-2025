@@ -1,3 +1,64 @@
+ya des cases sur lequel on peu se déplacer
+il ya des embranchements
+le joueur se déplace en roulant deux dé 4
+les cases ont des nombres (les cases -1,1,2,3,4 doivent être mis selon une certain probabilité)
+ou les cases peuvent donner des évènements
+sense de rotation dans la carte
+une case peut trigger le changement de maps, ou chaque 2 tours le quantum map controller apparait.
+le quantum map controller, état initiale = last state, un layer de superposition, tout le monde doit mettre au moin 1 gate.
+commence avec paulix,y,z
+decoherence a chaque 4 layers 
+l'étoile spawn à la même place toujours
+si temps, mettre des shops
+
+general gameplayloop:
+sélection manuelle de l'ordre des tours initiallement (qui s'y connait le plus en quantique)
+lancer les deux dé pour le premier joueur
+le premier joueur avance sur la map
+si il arrive sur un embranchement, il peut choisir son chemin
+selon la case, un évènement se case.
+si il passe devant une étoile, il prend cette étoile. (si temps, requis pour acheter l'étoile : T gate)
+on répète avec les autres joueurs.
+minigame happen (nothing for now) -> reward is : 
+le quantum map controller apparait
+les joueurs placent leur gates
+mesure, la carte change -> l'état 00 la map ne change pas, l'état 10 et 01 la map change dépendemment des 0 and 1, l'état 11 téléporte l'étoile.
+l'environment change
+
+
+phase 2 : 
+plus de qubits, plus d'évènement
+
+
+possible environment change:
+pont qui se s'ouvre et ferme 
+casino ouvert ou fermer (shortcut)
+mur qui apparait ou disparait
+rivière qui apparait ou disparait
+
+
+available gates:
+swap
+cnot
+hadamard
+pauli X,Y,Z
+sqrt X
+S, T <- pas temps utile
+oracle gate (boite noir qui donne exactement l'état voulue)
+
+
+évènement:
+donner une 1 à 4 de gate
+give powerup/algorithms
+
+Game mechanics : 
+a set a circles connected together
+décoherence à chaque x depth
+
+POWERUPS:
 powerup swap gate
 un joueur lance deux dé de 1 à 4. un joueur peu interféré avec l'autre joueur si il pogne la pièce interference.
-décoherence à chaque x depth
+shor powerup : decrypt card
+
+
+minigame : 

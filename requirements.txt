@@ -10,3 +10,4 @@ pylatexenc==2.10
 plotly==6.0.1
 imageio==2.37.0
 tqdm==4.67.1
+pygame==2.6.1
