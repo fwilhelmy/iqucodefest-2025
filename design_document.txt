@@ -12,7 +12,7 @@ l'étoile spawn à la même place toujours
 si temps, mettre des shops
 
 general gameplayloop:
-sélection manuelle de l'ordre des tours initiallement (qui s'y connait le plus en quantique)
+sélection manuelle de l'ordre des tours pour chaque joueur initiallement (qui s'y connait le plus en quantique) et le nombre de tours
 lancer les deux dé pour le premier joueur
 le premier joueur avance sur la map
 si il arrive sur un embranchement, il peut choisir son chemin
@@ -24,6 +24,7 @@ le quantum map controller apparait
 les joueurs placent leur gates
 mesure, la carte change -> l'état 00 la map ne change pas, l'état 10 et 01 la map change dépendemment des 0 and 1, l'état 11 téléporte l'étoile.
 l'environment change
+lorsqu'il n'y a plus de tours, selui avec le plus d'étoile gagne
 
 
 phase 2 : 
