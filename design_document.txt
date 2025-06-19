@@ -1,0 +1,3 @@
+powerup swap gate
+un joueur lance deux dé de 1 à 4. un joueur peu interféré avec l'autre joueur si il pogne la pièce interference.
+décoherence à chaque x depth
