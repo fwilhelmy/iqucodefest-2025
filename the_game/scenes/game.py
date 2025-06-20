@@ -118,7 +118,7 @@ class GameScene(Scene):
 
     def handle_event(self, e):
         if e.type == pygame.KEYDOWN and e.key == pygame.K_ESCAPE:
-            from scenes.menu import MenuScene
+            from the_game.scenes.menu import MenuScene
             self.manager.go_to(MenuScene(self.manager))
         elif self.moving_player is None:
             roll_keys = (pygame.K_SPACE, pygame.K_RETURN, pygame.K_r)
@@ -133,21 +133,6 @@ class GameScene(Scene):
                 self.move_timer = self.MOVE_DELAY
                 if self.steps_remaining <= 0:
                     self._end_move()
-<<<<<<< HEAD
-            return
-
-        if self.moving_player is None:
-            if e.type == pygame.KEYDOWN and e.key in (pygame.K_SPACE, pygame.K_RETURN):
-                self._roll_one_die()
-            if self.roll_button.handle_event(e):
-                self._roll_one_die()
-
-
-        if self.roll_button.handle_event(e):
-            self._roll_one_die()
-
-        if e.type == pygame.QUIT:
-=======
             elif e.key == pygame.K_MINUS:
                 self.zoom = self._clamp_zoom(self.zoom - self.ZOOM_STEP)
             elif e.key == pygame.K_EQUALS:
@@ -157,7 +142,6 @@ class GameScene(Scene):
             elif e.key == pygame.K_RIGHT:
                 self.branch_index = (self.branch_index + 1) % len(self.branch_options)
         elif e.type == pygame.QUIT:
->>>>>>> 9dddb727984b620f6e511980f31a14e9b3b83a0c
             pygame.quit(); sys.exit()
 
         
