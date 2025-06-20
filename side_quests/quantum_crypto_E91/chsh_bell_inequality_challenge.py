@@ -169,7 +169,6 @@ def create_eavesdropped_state(bell_qc: QuantumCircuit = None) -> QuantumCircuit:
     This function is used to model eavesdropping in the E91 protocol, showing how Eve's measurement destroys quantum correlations.
     """
     
-    # TODO CHECK WITH CHARLES. THIS MIGHT BE REALLY BAD
     bell_qc.measure_all()
     counts = run_circuit(bell_qc)
 
@@ -215,7 +214,6 @@ def apply_basis_transformation(circuit: QuantumCircuit, qubit_index: int, basis:
 
     """
     
-    # TODO CHECK IMPLEMENTATION WITH CHARLES
     basis_dict = {'0': 0, '90': np.pi/2, '45': np.pi/4, '135': 3*np.pi/4}
     circuit.ry(-basis_dict[basis], qubit_index)
     return circuit
