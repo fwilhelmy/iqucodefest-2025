@@ -4,6 +4,10 @@ from the_game.settings import WIDTH, HEIGHT, WHITE, BLACK, GREEN
 from the_game.core.scene import Scene
 from the_game.ui.widgets import Button
 
+# Default radius used when drawing nodes at a zoom level of 1.0.  Smaller
+# nodes make crowded maps easier to read.
+BASE_NODE_RADIUS = 20
+
 # colour palette for node types
 TYPE_COLOUR = {
     1: ( 50, 140, 255),   # blue
@@ -211,7 +215,7 @@ class GameScene(Scene):
             x = x * self.zoom + self.cam_x
             y = y * self.zoom + self.cam_y
             col  = TYPE_COLOUR[data["type"]]
-            radius = max(10, int(30 * self.zoom))
+            radius = max(8, int(BASE_NODE_RADIUS * self.zoom))
             pygame.draw.circle(s, col, (x, y), radius)
             pygame.draw.circle(s, BLACK, (x, y), radius, max(1, int(3 * self.zoom)))
 
