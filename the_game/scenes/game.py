@@ -18,6 +18,7 @@ class GameScene(Scene):
     with left/right arrows (cycle) and Enter (confirm) for demo purposes.
     """
     CAM_SPEED = 400  # pixels per second
+    MOVE_DELAY = 0.4  # seconds between steps when walking
 
     def __init__(self, manager, players, n_turns, map_module):
         super().__init__(manager)
@@ -55,53 +56,79 @@ class GameScene(Scene):
         self.cam_x = 0
         self.cam_y = 0
 
-    # ── simple navigation demo ─────────────────────────────────────────
-    def _move_player(self, player, steps):
-        current = player.position
-        for _ in range(steps):
-            succ = list(self.g.successors(current))
-            if not succ:
-                break
-            current = random.choice(succ)
-        player.position = current
+        # movement animation state
+        self.moving_player = None
+        self.steps_remaining = 0
+        self.move_timer = 0
+        self.awaiting_choice = False
+        self.branch_options = []
+        self.branch_index = 0
 
-        # Award a star if the landing node is of the star type
+    # ── simple navigation demo ─────────────────────────────────────────
+    def _start_move(self, player, steps):
+        """Begin walking ``steps`` spaces with animation."""
+        self.moving_player = player
+        self.steps_remaining = steps
+        self.move_timer = 0
+        self.awaiting_choice = False
+        self.branch_options = []
+        self.branch_index = 0
+
+    def _end_move(self):
+        """Finish the current player's move and handle turn logic."""
+        current = self.moving_player.position
         if self.g.nodes[current].get("type") == 4:
-            player.add_stars(1)
+            self.moving_player.add_stars(1)
+        self.moving_player = None
+        self.steps_remaining = 0
+        self.pending_rolls.clear()
+        self.active_idx = (self.active_idx + 1) % len(self.players)
+        self.n_turns -= 1
+        if self.n_turns <= 0:
+            from scenes.winner import WinnerScene
+            self.manager.go_to(WinnerScene(self.manager, self.players))
 
     def _roll_one_die(self):
         """Roll a single die and store the result."""
         value = random.randint(1, 6)
         self.pending_rolls.append(value)
 
-        # When both dice are rolled, move the player
-        if len(self.pending_rolls) == 2:
+        # When both dice are rolled, start walking animation
+        if len(self.pending_rolls) == 2 and self.moving_player is None:
             player = self.players[self.active_idx]
             d1, d2 = self.pending_rolls
             steps = d1 + d2
             self.last_roll = (
                 player.name or f"P{player.slot+1}", d1, d2, steps
             )
-            self._move_player(player, steps)
-            self.active_idx = (self.active_idx + 1) % len(self.players)
-            self.pending_rolls.clear()
-            self.n_turns -= 1
-            if self.n_turns <= 0:
-                from scenes.winner import WinnerScene
-                self.manager.go_to(WinnerScene(self.manager, self.players))
-                return
+            self._start_move(player, steps)
 
     def handle_event(self, e):
-        if e.type == pygame.KEYDOWN:
-            if e.key == pygame.K_ESCAPE:          # back to menu
-                from scenes.menu import MenuScene
-                self.manager.go_to(MenuScene(self.manager))
+        if e.type == pygame.KEYDOWN and e.key == pygame.K_ESCAPE:
+            from scenes.menu import MenuScene
+            self.manager.go_to(MenuScene(self.manager))
+            return
 
-            elif e.key in (pygame.K_SPACE, pygame.K_RETURN):
+        if self.awaiting_choice and e.type == pygame.KEYDOWN:
+            if e.key == pygame.K_LEFT:
+                self.branch_index = (self.branch_index - 1) % len(self.branch_options)
+            elif e.key == pygame.K_RIGHT:
+                self.branch_index = (self.branch_index + 1) % len(self.branch_options)
+            elif e.key in (pygame.K_RETURN, pygame.K_SPACE):
+                next_node = self.branch_options[self.branch_index]
+                self.moving_player.position = next_node
+                self.steps_remaining -= 1
+                self.awaiting_choice = False
+                self.move_timer = self.MOVE_DELAY
+                if self.steps_remaining <= 0:
+                    self._end_move()
+            return
+
+        if self.moving_player is None:
+            if e.type == pygame.KEYDOWN and e.key in (pygame.K_SPACE, pygame.K_RETURN):
                 self._roll_one_die()
-
-        if self.roll_button.handle_event(e):
-            self._roll_one_die()
+            if self.roll_button.handle_event(e):
+                self._roll_one_die()
 
         if e.type == pygame.QUIT:
             pygame.quit(); sys.exit()
@@ -113,6 +140,24 @@ class GameScene(Scene):
         if keys[pygame.K_RIGHT]: self.cam_x -= spd
         if keys[pygame.K_UP]:    self.cam_y += spd
         if keys[pygame.K_DOWN]:  self.cam_y -= spd
+
+        if self.moving_player and not self.awaiting_choice:
+            self.move_timer -= dt
+            if self.move_timer <= 0:
+                current = self.moving_player.position
+                succ = list(self.g.successors(current))
+                if not succ:
+                    self._end_move()
+                elif len(succ) > 1:
+                    self.awaiting_choice = True
+                    self.branch_options = succ
+                    self.branch_index = 0
+                else:
+                    self.moving_player.position = succ[0]
+                    self.steps_remaining -= 1
+                    self.move_timer = self.MOVE_DELAY
+                    if self.steps_remaining <= 0:
+                        self._end_move()
 
     # ── drawing helpers ────────────────────────────────────────────────
     def _draw_edges(self, s):
@@ -196,5 +241,15 @@ class GameScene(Scene):
             info = self.font.render(text, True, BLACK)
             s.blit(info, (10, 40 + i*20))
 
-        # Roll button
-        self.roll_button.draw(s)
+        # Roll button only when not walking
+        if self.moving_player is None:
+            self.roll_button.draw(s)
+
+        if self.awaiting_choice:
+            opts = [
+                ("["+n+"]" if i==self.branch_index else n)
+                for i,n in enumerate(self.branch_options)
+            ]
+            msg = "Choose path: " + " ".join(opts) + "  (\u2190/\u2192+Enter)"
+            img = self.font.render(msg, True, BLACK)
+            s.blit(img, (10, HEIGHT - 30))
