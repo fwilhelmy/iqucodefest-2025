@@ -157,6 +157,7 @@ class GameScene(Scene):
             pygame.draw.circle(s, col, (x, y), radius)
             pygame.draw.circle(s, BLACK, (x, y), radius, max(1, int(3 * self.zoom)))
 
+
             if data["type"] in (1,2):
                 if "value" in data and data["value"] is not None:
                     label = str(data["value"])
