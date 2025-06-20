@@ -14,8 +14,8 @@ class GameUI:
     def draw_skip_button(screen, font, width, height):
         btn_rect = pygame.Rect(width - 350, height - 300, 120, 50)  # juste sous la mesure
         pygame.draw.rect(screen, (200, 100, 100), btn_rect)
-        txt = font.render("Skip", True, (0, 0, 0))
-        screen.blit(txt, (btn_rect.x + 30, btn_rect.y + 10))
+        txt = font.render("End Turn", True, (0, 0, 0))
+        screen.blit(txt, (btn_rect.x + 10, btn_rect.y + 10))
         return btn_rect
 
     @staticmethod
