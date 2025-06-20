@@ -7,13 +7,15 @@ fallback definitions below are used.
 
 from __future__ import annotations
 import os
-import networkx as nx
-import os
 from typing import Iterable, Mapping, Tuple
+
 import networkx as nx
 import yaml
 
 _DEF_LAYOUT_SCALE = 500
+# Factor applied to all node positions loaded from YAML to allow easy
+# adjustment of spacing without modifying the YAML file itself.
+_POS_SCALE = 1.5
 
 def build_graph_from_yaml(path: str) -> nx.DiGraph:
     """Create a directed graph from a YAML description.
@@ -32,7 +34,8 @@ def build_graph_from_yaml(path: str) -> nx.DiGraph:
     for name, attrs in nodes.items():
         attrs = attrs or {}
         if pos and name in pos:
-            attrs["pos"] = tuple(pos[name])
+            x, y = pos[name]
+            attrs["pos"] = (x * _POS_SCALE, y * _POS_SCALE)
         g.add_node(name, **attrs)
 
     g.add_edges_from(edges)
@@ -40,10 +43,11 @@ def build_graph_from_yaml(path: str) -> nx.DiGraph:
     # Compute positions if none supplied
     if not pos:
         layout = nx.spring_layout(g, seed=0)
+        scale = _DEF_LAYOUT_SCALE * _POS_SCALE
         for n, (x, y) in layout.items():
             g.nodes[n]["pos"] = (
-                int(x * _DEF_LAYOUT_SCALE + _DEF_LAYOUT_SCALE),
-                int(y * _DEF_LAYOUT_SCALE + _DEF_LAYOUT_SCALE / 2),
+                int(x * scale + scale),
+                int(y * scale + scale / 2),
             )
 
     return g
