@@ -137,8 +137,10 @@ class GameScene(Scene):
             x, y = data["pos"]
             x += self.cam_x; y += self.cam_y
             col  = TYPE_COLOUR[data["type"]]
-            pygame.draw.circle(s, col, (x,y), 30)
-            pygame.draw.circle(s, BLACK, (x,y), 30, 3)
+            # reduce node radius from 30px to 20px so the board looks less
+            # crowded on smaller screens
+            pygame.draw.circle(s, col, (x,y), 20)
+            pygame.draw.circle(s, BLACK, (x,y), 20, 3)
 
             if data["type"] in (1,2):
                 if "value" in data and data["value"] is not None:
