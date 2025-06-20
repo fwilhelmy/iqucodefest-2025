@@ -20,7 +20,7 @@ class GameScene(Scene):
     def __init__(self, manager, players, n_turns, map_module):
         super().__init__(manager)
         self.players = sorted(players, key=lambda p: p.order)
-        self.n_turns = n_turns
+        self.n_turns = n_turns  # remaining turns
 
         # ── build graph ────────────────────────────────────────────────
         self.g: nx.DiGraph = map_module.build_graph()
@@ -79,6 +79,11 @@ class GameScene(Scene):
             self._move_player(player, steps)
             self.active_idx = (self.active_idx + 1) % len(self.players)
             self.pending_rolls.clear()
+            self.n_turns -= 1
+            if self.n_turns <= 0:
+                from scenes.winner import WinnerScene
+                self.manager.go_to(WinnerScene(self.manager, self.players))
+                return
 
     def handle_event(self, e):
         if e.type == pygame.KEYDOWN:
@@ -159,10 +164,14 @@ class GameScene(Scene):
             hud += f"  |  {name} rolled {d1}+{d2}→{total}"
         txt = self.font.render(hud, True, BLACK)
         s.blit(txt, (10, 10))
+        turns_txt = self.font.render(f"Turns left: {self.n_turns}", True, BLACK)
+        s.blit(turns_txt, (WIDTH - turns_txt.get_width() - 10, 10))
 
-        # Display star count for each player
+        # Display stars and gate counts for each player
         for i, p in enumerate(self.players):
-            info = self.font.render(f"{p.name}: {p.stars}★", True, BLACK)
+            gates = ", ".join(f"{g}:{c}" for g,c in p.gates.items())
+            text = f"{p.name}: {p.stars}★ | {gates}"
+            info = self.font.render(text, True, BLACK)
             s.blit(info, (10, 40 + i*20))
 
         # Roll button
