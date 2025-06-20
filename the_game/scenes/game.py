@@ -206,7 +206,11 @@ class GameScene(Scene):
             pygame.draw.circle(s, BLACK, (x,y), radius, 2)
 
             if data["type"] in (1,2):
-                label = str(data.get("value", ""))
+                if "value" in data and data["value"] is not None:
+                    label = str(data["value"])
+                else:
+                    digits = "".join(ch for ch in n if ch.isdigit())
+                    label = digits
             elif data["type"] == 3:
                 label = "X"  # previously used ⊕ which may not render
             else:  # type 4
