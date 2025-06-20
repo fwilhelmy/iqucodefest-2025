@@ -2,9 +2,9 @@ import pygame, sys
 from qiskit import QuantumCircuit
 from qiskit_aer import AerSimulator
 
-from settings import WIDTH, HEIGHT, WHITE, BLACK
-from core.scene import Scene, SceneManager
-from ui.widgets import Button
+from the_game.settings import WIDTH, HEIGHT, WHITE, BLACK
+from the_game.core.scene import Scene, SceneManager
+from the_game.ui.widgets import Button
 
 class QuantumCoinScene(Scene):
     """Simple coin flip using Qiskit AerSimulator."""

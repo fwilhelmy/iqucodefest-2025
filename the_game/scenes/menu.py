@@ -1,9 +1,9 @@
 import pygame, sys
-from settings import BLACK, WHITE, GREEN, MAP_FILES, MAP_THUMBS
-from models.player import Player
-from ui import widgets                   
-from core.scene import Scene
-from scenes.game import GameScene     
+from the_game.settings import BLACK, WHITE, GREEN, MAP_FILES, MAP_THUMBS
+from the_game.models.player import Player
+from the_game.ui import widgets                   
+from the_game.core.scene import Scene
+from the_game.scenes.game import GameScene     
 from importlib import import_module
 
 TextInput   = widgets.TextInput          

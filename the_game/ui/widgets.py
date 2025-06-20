@@ -4,7 +4,7 @@ Call ui.widgets.init_fonts(...) once *after* pygame.init() so the widgets
 know which fonts to use.
 """
 import pygame
-from settings import BLACK, GREY, GREEN
+from the_game.settings import BLACK, GREY, GREEN
 
 # will be set by init_fonts()
 FONT_L = FONT_M = FONT_S = None
