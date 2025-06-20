@@ -235,24 +235,22 @@ class GameScene(Scene):
         self._draw_players(s)
 
     def _draw_players(self, s):
-        offsets = [(-15,-40), (15,-40), (-15,-60), (15,-60)]
+        # Draw each player centred on their current node
         for idx, p in enumerate(self.players):
             x, y = self.g.nodes[p.position]["pos"]
             x = x * self.zoom + self.cam_x
             y = y * self.zoom + self.cam_y
-            dx, dy = offsets[idx % len(offsets)]
-            dx *= self.zoom; dy *= self.zoom
             if p.sprite:
                 img = p.sprite
                 if self.zoom != 1.0:
                     size = int(img.get_width() * self.zoom), int(img.get_height() * self.zoom)
                     img = pygame.transform.smoothscale(img, size)
-                r = img.get_rect(center=(x+dx, y+dy))
+                r = img.get_rect(center=(x, y))
                 s.blit(img, r)
             else:
-                pygame.draw.circle(s, p.color, (int(x+dx), int(y+dy)), int(12*self.zoom))
+                pygame.draw.circle(s, p.color, (int(x), int(y)), int(12*self.zoom))
             if idx == self.active_idx:
-                pygame.draw.circle(s, GREEN, (int(x+dx), int(y+dy)), int(14*self.zoom), max(1, int(2*self.zoom)))
+                pygame.draw.circle(s, GREEN, (int(x), int(y)), int(14*self.zoom), max(1, int(2*self.zoom)))
 
     def draw(self, s):
         s.fill(WHITE)
