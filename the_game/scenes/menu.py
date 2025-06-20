@@ -1,5 +1,5 @@
 import pygame, sys
-from settings import BLACK, WHITE, MAP_FILES, MAP_THUMBS
+from settings import BLACK, WHITE, GREEN, MAP_FILES, MAP_THUMBS
 from models.player import Player
 from ui import widgets                   
 from core.scene import Scene
@@ -15,11 +15,15 @@ class MenuScene(Scene):
     def __init__(self, manager):
         super().__init__(manager)
 
+        # background image
+        self.background = pygame.image.load("resources/superquantumparty.png").convert_alpha()
+
         # ─── build UI ────────────────────────────────────────────────
         self.players_ui=[]
         order_opts=[1,2,3,4]
+        # Keep all drop downs vertically aligned
         for idx in range(4):
-            y=150+idx*45
+            y=180+idx*45
             name = TextInput((150,y,180,28), f"Player {idx+1}")
             prio = DropDown((455+(idx*60), y,60,28), order_opts, idx+1)
             self.players_ui.append((name, prio))
@@ -58,18 +62,27 @@ class MenuScene(Scene):
     def update(self, dt): pass
 
     def draw(self, s):
-        s.fill(WHITE)
-        title = widgets.FONT_L.render("Super Quantum Party", True, BLACK)
-        s.blit(title, title.get_rect(center=(s.get_width()//2, 60)))
+        # draw background centered without scaling
+        bg_rect = self.background.get_rect(center=s.get_rect().center)
+        s.blit(self.background, bg_rect)
+
+        # translucent panel for menu elements
+        panel = pygame.Surface((980, 420), pygame.SRCALPHA)
+        panel.fill((255, 255, 255, 220))
+        s.blit(panel, (60, 120))
+        pygame.draw.rect(s, BLACK, pygame.Rect(60, 120, 980, 420), 2)
+
+        title = widgets.FONT_L.render("Super Quantum Party", True, GREEN)
+        s.blit(title, title.get_rect(center=(s.get_width()//2, 150)))
 
         for i in range(4):
-            y=150+i*45
-            s.blit(widgets.FONT_S.render(f"Player {i+1} :",True,BLACK),(40,y+4))
+            y=180+i*45
+            s.blit(widgets.FONT_S.render(f"Player {i+1} :",True,BLACK),(65,y+4))
             s.blit(widgets.FONT_S.render("Turn Priority:",True,BLACK),(350,y+4))
 
         for n,d in self.players_ui: n.draw(s); d.draw(s)
-        s.blit(widgets.FONT_M.render("Number of turns :",True,BLACK),(50,350))
+        s.blit(widgets.FONT_M.render("Number of turns :",True,BLACK),(65,350))
         self.turn_toggle.draw(s)
-        s.blit(widgets.FONT_M.render("Map selection :",True,BLACK),(50,400))
+        s.blit(widgets.FONT_M.render("Map selection :",True,BLACK),(65,400))
         self.map_select.draw(s)
         self.play_btn.draw(s)
