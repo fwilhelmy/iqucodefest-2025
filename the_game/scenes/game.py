@@ -67,6 +67,17 @@ class GameScene(Scene):
             if e.key == pygame.K_ESCAPE:          # back to menu
                 from scenes.menu import MenuScene
                 self.manager.go_to(MenuScene(self.manager))
+
+            elif e.key in (pygame.K_LEFT, pygame.K_RIGHT):
+                self.cursor_target = self._pick_next_edge()
+            elif e.key in (pygame.K_RETURN, pygame.K_SPACE):
+                # move the pawn
+                if hasattr(self, "cursor_target"):
+                    self.active_node = self.cursor_target
+                    self.edge_iter = itertools.cycle(self.g.successors(self.active_node))
+                    # Award a star if the node is of type 4
+                    if self.g.nodes[self.active_node].get("type") == 4:
+                        self.players[self.active_idx].add_stars(1)
             elif e.key in (pygame.K_SPACE, pygame.K_RETURN):
                 self.roll_and_move()
 
@@ -137,3 +148,8 @@ class GameScene(Scene):
             hud += f"  |  {name} rolled {d1}+{d2}→{total}"
         txt = self.font.render(hud, True, BLACK)
         s.blit(txt, (10, 10))
+
+        # Display star count for each player
+        for i, p in enumerate(self.players):
+            info = self.font.render(f"{p.name}: {p.stars}★", True, BLACK)
+            s.blit(info, (10, 40 + i*20))

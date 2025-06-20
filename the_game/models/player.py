@@ -9,6 +9,15 @@ class Player:
     def get_name(self):       return self.name
     def get_position(self):   return self.position
     def set_turn_priority(self, order): self.order = order
+
+    def get_stars(self):      return self.stars
+    def add_stars(self, n:int=1):   self.stars += n
+    def set_stars(self, n:int):     self.stars = n
+    def __init__(self, slot):
+        self.name: str = ""
+        self.position: int = 0                      # Space ID
+        self.gates: dict = {'H':0,'X':0,'Y':0,'Z':0}  # gate counts
+        self.stars: int = 0                         # star count
     def set_sprite(self, surf): self.sprite = surf
     def __init__(self, slot):
         self.name: str = ""
