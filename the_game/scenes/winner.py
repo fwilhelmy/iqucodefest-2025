@@ -34,7 +34,7 @@ class WinnerScene(Scene):
         title = self.font_big.render("Results", True, YELLOW)
         s.blit(title, title.get_rect(center=(WIDTH // 2, 80)))
         for i, p in enumerate(self.players):
-            text = f"{i+1}. {p.name} - {p.stars}\u2605 - {sum(p.gates.values())} gates"
+            text = f"{i+1}. {p.name} - {p.stars}* - {sum(p.gates.values())} gates"
             img = self.font.render(text, True, BLACK)
             pos = (WIDTH // 2 - img.get_width() // 2, 150 + i * 50)
             if i == 0:
