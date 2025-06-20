@@ -108,9 +108,17 @@ class ImageSelect:
 
 class Button:
     def __init__(self, text, center):
-        self.image = FONT_L.render(text, True, BLACK)
-        self.rect  = self.image.get_rect(center=center)
-    def handle_event(self,e): return e.type==pygame.MOUSEBUTTONDOWN and self.rect.collidepoint(e.pos)
-    def draw(self,s): 
-        s.blit(self.image,self.rect)
-        pygame.draw.rect(s,BLACK,self.rect,3)
+        self.text = text
+        self.text_image = FONT_L.render(text, True, BLACK)
+        self.text_rect = self.text_image.get_rect(center=center)
+        padding = 10  # extra space around the text
+        self.rect = self.text_rect.inflate(padding * 2, padding * 2)
+        self.rect.center = center
+
+    def handle_event(self, e):
+        return e.type == pygame.MOUSEBUTTONDOWN and self.rect.collidepoint(e.pos)
+
+    def draw(self, s):
+        pygame.draw.rect(s, (255, 255, 255), self.rect)  # draw white background
+        s.blit(self.text_image, self.text_rect)
+        pygame.draw.rect(s, BLACK, self.rect, 3)
