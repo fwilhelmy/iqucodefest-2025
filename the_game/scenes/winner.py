@@ -1,7 +1,7 @@
 import pygame, sys
-from settings import WIDTH, HEIGHT, WHITE, BLACK, YELLOW
-from core.scene import Scene
-from ui.widgets import Button
+from the_game.settings import WIDTH, HEIGHT, WHITE, BLACK, YELLOW
+from the_game.core.scene import Scene
+from the_game.ui.widgets import Button
 
 class WinnerScene(Scene):
     def __init__(self, manager, players):
@@ -18,10 +18,10 @@ class WinnerScene(Scene):
 
     def handle_event(self, e):
         if e.type == pygame.KEYDOWN and e.key == pygame.K_ESCAPE:
-            from scenes.menu import MenuScene
+            from the_game.scenes.menu import MenuScene
             self.manager.go_to(MenuScene(self.manager))
         if self.button.handle_event(e):
-            from scenes.menu import MenuScene
+            from the_game.scenes.menu import MenuScene
             self.manager.go_to(MenuScene(self.manager))
         if e.type == pygame.QUIT:
             pygame.quit(); sys.exit()

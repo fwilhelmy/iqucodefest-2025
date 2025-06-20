@@ -1,38 +1,32 @@
-# iQuCodeFest 2025
+# iQuCodeFest 2025 - Super Quantum Party
 
-Welcome to the official repository for iQuCodeFest 2025!
+This is the submission of the team QuantumETS1 for iQuCodeFest 2025!
 
-This repository contains all the files, notebooks, and resources for the quantum computing hackathon taking place on June 19th and 20th, 2025, at `Polytechnique Montréal`.
+To run the game, first install the virtual environment with all the env (see setup and installation section), then run the command
+    ```
+    python -m the_game```
+    from the root repository
 
-## Repository Structure
+Quantum_mario_party.ipynb contient tout notre code directement en liens avec le calcul quantique
 
-### 1. Tutorials
-**`tutorials/`**
-This folder is designed for beginners with little or no prior experience in quantum computing. It contains three challenges to help you get started:
-- **`intro_qiskit`**: Introductory notebooks on quantum computing concepts using Qiskit. Includes explanations, example code, and exercises to reinforce your understanding.
-- **`bloch_sphere_dojo`**: Learn about quantum gates and visualize their effects on the Bloch sphere.
-- **`quantum_dojo`**: Understand quantum states (e.g., $|\psi⟩$) and the quantum circuits that generate them.
+Voici la descriptions du fonctionnement:
+Chaque joueur choisi leur noms, le premier joueur doit être la personne dans le group avec la meilleur théorie quantique.
+Une fois fait, cliquez sur Play pour commencer.
+Vous tombez alors dans un jeux similaire à super mario party, seulement version quantique :
+- Vous roulez le dé quantique faisant une marche aléatoire quantique en cliquant sur Espace. (en phase 2, les distributions du dé change pour mieu tirer de cette distribution)
+- Votre joueur se déplace dépendemment du nombre que vous avez obtenu en lançant le dé. 
+- Si vous atterissez sur une case bleu, vous obtiendrez entre 1 à 4 partes quantiques dans votre inventaire.
+- Si vous passer devant une étoile, vous gagnez une étoile dans votre inventaire.
+- À chaque intersection, vous devez choisir le chemin sur lequel vous voulez allez. pour ce faire, utiliser les flèches sur votre clavier d'ordinateur et cliquer par la suite sur espace.
+- à la fin de chaque tour, un mini-jeux apparait ! ce mini jeux permet de naviguer les différentes superposition de la carte (le graph avec noeuds). si l'état final mesuré est 01 ou 10, alors les "rivière" et les "portes" du niveau sont mesurer et ils "collapsent" vers seulement un chemin possible. Si l'état 11 est mesurer, la carte collapse sa superposition et le graph dirigé inverse sa direction. les joueurs doivent stratégiquement placer leur portes qu'ils ont collecter de sorte à obtenir l'état quantique qu'ils veulent. L'objectif étant de désavantager les autres d'obtenir une étoile tout en essayant de s'avantager.
+- !!Présentement, il faut cliquer sur le bouton "measurement" avant de cliquer sur continuer si vous voulez que la carte change!!
+- Attention ! Ajouter trop de gates rend le circuit inutilisable !
+- Le gagnant est le joueur qui réussi à collecter le plus d'étoile et le plus de gates.
 
-### 2. Side quests
-**`side_quests/`**
-This directory includes a set of intermediate-level challenges:
-- **Teleportation & Superdense Coding**
-- **Quantum Cryptography (E91)**
-  - CHSH Bell Inequality
-  - E91 Protocol
-- **QAOA (Quantum Approximate Optimization Algorithm)**
+### future features
 
-### 3. Main Challenge
-**`main_challenge/`**
-This folder contains the main hackathon challenge:
-- **`iQuCodeFest_Rule_Book.pdf`**: Detailed description of the Quantum Board Game Challenge.
-
-#### Quantum Board Game Challenge Summary
-Participants are invited to reimagine classic games by integrating quantum principles—such as superposition, entanglement, and quantum measurement—directly into the rules or gameplay. The goal is not to solve classical problems with quantum computers, but to create new, quantum-inspired versions of familiar games that showcase creativity and a deeper understanding of quantum concepts.
-
-Please refer to the iQuCodeFest Rule Book for more details.
-
----
+- implémentez des powerups -> ex: swap gate permet de s'intriquer avec un joueur et se teleporter à un moment choisi, 
+- implémentez des minijeu quantique plus élaborer
 
 ## Setup and Installation
 
@@ -53,7 +47,6 @@ To set up your environment:
     pip install -r requirements.txt
     ```
 
-For detailed setup instructions and troubleshooting, refer to `python_project_setup_guide.md`.
 
 ---
 
@@ -70,7 +63,7 @@ new maps using a compact YAML file and load them with
    ```python
    from the_game.maps.yaml_map import build_graph_from_yaml
 
-   graph = build_graph_from_yaml("the_game/maps/example_map.yml")
+   graph = build_graph_from_yaml("the_game/maps/new_map.yml")
    ```
 
 If the YAML file omits pixel positions, coordinates are generated

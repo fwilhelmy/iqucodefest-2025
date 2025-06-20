@@ -1,9 +1,9 @@
 import pygame, sys
-from settings import BLACK, WHITE, GREEN, MAP_FILES, MAP_THUMBS
-from models.player import Player
-from ui import widgets                   
-from core.scene import Scene
-from scenes.game import GameScene     
+from the_game.settings import BLACK, WHITE, GREEN, MAP_FILES, MAP_THUMBS, WIDTH, HEIGHT
+from the_game.models.player import Player
+from the_game.ui import widgets                   
+from the_game.core.scene import Scene
+from the_game.scenes.game import GameScene     
 from importlib import import_module
 
 TextInput   = widgets.TextInput          
@@ -17,10 +17,12 @@ class MenuScene(Scene):
 
         # background image
         self.background = pygame.image.load("resources/superquantumparty.png")
+        self.background = pygame.transform.scale(self.background, (WIDTH, HEIGHT))
 
         # ── background music ────────────────────────────────────────────
         pygame.mixer.music.load("resources/audio/menu_music.mp3")
         pygame.mixer.music.play(-1)
+        pygame.mixer.music.set_volume(0.5)  # Set volume to 50%
 
         # ─── build UI ────────────────────────────────────────────────
         self.players_ui=[]
@@ -69,20 +71,17 @@ class MenuScene(Scene):
 
     def draw(self, s):
         # draw background centered without scaling
-        # Scale the background image to be less zoomed in while preserving its 16:9 aspect ratio
-        screen_w, screen_h = s.get_size()
-        bg_image = pygame.transform.smoothscale(self.background, s.get_size())
-        bg_rect = bg_image.get_rect(center=(screen_w // 2, screen_h // 2))
-        s.blit(bg_image, bg_rect)
+        bg_rect = self.background.get_rect(center=s.get_rect().center)
+        s.blit(self.background, bg_rect)
 
         # translucent panel for menu elements
-        # panel = pygame.Surface((980, 420), pygame.SRCALPHA)
-        # panel.fill((255, 255, 255, 220))
-        # s.blit(panel, (60, 120))
-        # pygame.draw.rect(s, BLACK, pygame.Rect(60, 120, 980, 420), 2)
+        panel = pygame.Surface((980, 420), pygame.SRCALPHA)
+        panel.fill((255, 255, 255, 220))
+        s.blit(panel, (60, 120))
+        pygame.draw.rect(s, BLACK, pygame.Rect(60, 120, 980, 420), 2)
 
-        title = widgets.FONT_L.render("Super Quantum Party", True, BLACK)
-        s.blit(title, title.get_rect(center=(s.get_width()//2, 50)))
+        title = widgets.FONT_L.render("Super Quantum Party", True, GREEN)
+        s.blit(title, title.get_rect(center=(s.get_width()//2, 150)))
 
         for i in range(4):
             y=180+i*45

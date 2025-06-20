@@ -5,18 +5,22 @@ from .gateGame.GameUI import GameUI
 from qiskit import QuantumCircuit
 from qiskit_aer.noise import NoiseModel, depolarizing_error
 
-from settings import WIDTH, HEIGHT, WHITE, BLACK, GREEN
-from core.scene import Scene
-from ui.widgets import Button
+from the_game.settings import WIDTH, HEIGHT, WHITE, BLACK, GREEN
+from the_game.core.scene import Scene
+from the_game.ui.widgets import Button
 
 class GateScene(Scene):
     GATE_COLORS = {"H": (200,200,255),"Z": (255,200,200),"Y": (200,255,200),"X": (255,255,200),"CNOT": (200,255,255),"SWAP": (255,200,255), "DECOH": (120,120,120)}
     GATE_LIST = ["H","Z","Y","X","CNOT","SWAP"]
     MAX_GATES = 20
 
-    def __init__(self, manager, players):
+    def __init__(self, manager, players, n_turns, map_module, previous_scene=None):
         super().__init__(manager)
         self.players = players
+        self.n_turns = n_turns
+        self.map_module = map_module
+        # reference to the GameScene to return to
+        self.previous_scene = previous_scene
         # Always ensure all gates are present for each player
         for p in self.players:
             if not hasattr(p, "gates") or not isinstance(p.gates, dict):
@@ -37,6 +41,7 @@ class GateScene(Scene):
         self.drag_offset = (0,0)
         self.drag_pos = (0,0)
         self.measurement_result = None
+        self.measurement_probs = None
         self.font = pygame.font.SysFont(None, 32)
         self.WIDTH = WIDTH
         self.HEIGHT = HEIGHT
@@ -78,6 +83,7 @@ class GateScene(Scene):
                 percent = self.get_decoherence_percent()
                 noise_model = CircuitSimulator.apply_decoherence_noise(self.qiskit_circuit, percent)
                 self.measurement_result = CircuitSimulator.apply_circuit(self.qiskit_circuit, noise_model=noise_model, gate_history=self.gate_history)
+                # Ne pas mettre à jour self.measurement_probs ici !
         elif event.type == pygame.MOUSEBUTTONUP:
             if self.dragging_gate:
                 mx, my = event.pos
@@ -124,14 +130,24 @@ class GateScene(Scene):
                 placed_gates = [g for g in self.gate_history[2:] if g[0] != "DECOH"]
                 if len(placed_gates) > 0 and len(placed_gates) % 4 == 0:
                     self.gate_history.append(("DECOH", None))
+                # Met à jour les probabilités après chaque placement de porte
+                percent = self.get_decoherence_percent()
+                noise_model = CircuitSimulator.apply_decoherence_noise(self.qiskit_circuit, percent)
+                self.measurement_probs = CircuitSimulator.get_probabilities(self.qiskit_circuit, noise_model=noise_model, gate_history=self.gate_history)
                 self.dragging_gate = None
                 self.drag_pos = (0,0)
         elif event.type == pygame.MOUSEMOTION:
             if self.dragging_gate:
                 self.drag_pos = event.pos
         if self.continue_button.handle_event(event):
-            from scenes.game import GameScene
-            self.manager.go_to(GameScene(self.manager, self.players))
+            if self.previous_scene is not None:
+                self.previous_scene.apply_measurement(self.measurement_result or "00")
+                self.manager.go_to(self.previous_scene)
+            else:
+                from the_game.scenes.game import GameScene
+                self.manager.go_to(
+                    GameScene(self.manager, self.players, self.n_turns, self.map_module)
+                )
 
     def update(self, dt):
         pass  # No time-based updates needed for this minigame
@@ -149,6 +165,8 @@ class GateScene(Scene):
         if self.measurement_result:
             txt = self.font.render(f"Measured: {self.measurement_result}", True, (0,0,0))
             screen.blit(txt, (self.WIDTH-300, self.HEIGHT-140))
+        if self.measurement_probs:
+            GameUI.draw_probability_table(screen, self.font, self.measurement_probs, self.WIDTH, self.HEIGHT)
         if self.dragging_gate:
             mx, my = self.drag_pos
             pygame.draw.rect(screen, self.GATE_COLORS[self.dragging_gate], (mx-40, my-20, 80, 40))
