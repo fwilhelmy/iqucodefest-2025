@@ -120,7 +120,7 @@ class GameScene(Scene):
                 self.manager.go_to(WinnerScene(self.manager, self.players))
             else:
                 try:
-                    from scenes.gate import GateScene
+                    from the_game.scenes.gate import GateScene
                     # Passe la liste des joueurs telle quelle, sans tri supplémentaire
                     self.manager.go_to(GateScene(self.manager, self.players))
                 except Exception as e:
