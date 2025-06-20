@@ -9,7 +9,11 @@ GREEN = (25, 180, 40)
 WHITE = (255, 255, 255)
 
 # Paths to map thumbnails / backgrounds
-MAP_FILES   = ["maps.example_map",
-               "maps.another_map"]
+# Map modules must be importable using their full package path. The previous
+# values referred to a top-level ``maps`` package which does not exist, causing
+# a crash when the Play button tries to load the selected map.  Prefix the
+# module path with ``the_game`` so ``importlib`` can locate it correctly.
+MAP_FILES   = ["the_game.maps.example_map",
+               "the_game.maps.example_map"]  # second map not yet implemented
 MAP_THUMBS  = ["resources/map1.png",
                "resources/map2.png"]
