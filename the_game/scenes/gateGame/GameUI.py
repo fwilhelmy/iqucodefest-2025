@@ -30,9 +30,9 @@ class GameUI:
             if players[current_player] == player:
                 pygame.draw.rect(screen, (0, 255, 0), rect, 4)
             pygame.draw.rect(screen, GATE_COLORS[gate], rect)
-            # Use smaller font for CNOT and SWAP
+            # Use same font, smaller size, not bold for CNOT and SWAP
             if gate in ("CNOT", "SWAP"):
-                small_font = pygame.font.SysFont("Arial", max(10, font.get_height() - 6))
+                small_font = pygame.font.SysFont(None, 24)
                 txt = small_font.render(f"{gate} ({player.gates.get(gate, 0)})", True, (0,0,0))
             else:
                 txt = font.render(f"{gate} ({player.gates.get(gate, 0)})", True, (0,0,0))
