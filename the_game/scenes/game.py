@@ -1,8 +1,8 @@
 import pygame, sys, random
 import networkx as nx
-from settings import WIDTH, HEIGHT, WHITE, BLACK, GREEN
-from core.scene import Scene
-from ui.widgets import Button
+from the_game.settings import WIDTH, HEIGHT, WHITE, BLACK, GREEN
+from the_game.core.scene import Scene
+from the_game.ui.widgets import Button
 
 # colour palette for node types
 TYPE_COLOUR = {
@@ -138,11 +138,6 @@ class GameScene(Scene):
             if self.roll_button.handle_event(e):
                 self._roll_one_die()
 
-
-            elif e.key == pygame.K_MINUS:
-                self.zoom = self._clamp_zoom(self.zoom - self.ZOOM_STEP)
-            elif e.key == pygame.K_EQUALS:
-                self.zoom = self._clamp_zoom(self.zoom + self.ZOOM_STEP)
 
         if self.roll_button.handle_event(e):
             self._roll_one_die()

@@ -14,7 +14,7 @@ YELLOW = (255, 215, 0)
 # values referred to a top-level ``maps`` package which does not exist, causing
 # a crash when the Play button tries to load the selected map.  Prefix the
 # module path with ``the_game`` so ``importlib`` can locate it correctly.
-MAP_FILES   = ["maps.example_map",
-               "maps.example_map"]  # second map not yet implemented
+MAP_FILES   = ["the_game.maps.new_map",  # first map implemented
+               "the_game.maps.old_map"]  # second map not yet implemented
 MAP_THUMBS  = ["resources/map1.png",
                "resources/map2.png"]
