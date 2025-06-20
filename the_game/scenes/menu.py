@@ -84,7 +84,7 @@ class MenuScene(Scene):
         # s.blit(panel, (60, 120))
         # pygame.draw.rect(s, BLACK, pygame.Rect(60, 120, 980, 420), 2)
 
-        title = widgets.FONT_L.render("Super Quantum Party", True, BLACK)
+        title = widgets.FONT_L.render("Super Quantum Party", True, (255,255,0))
         s.blit(title, title.get_rect(center=(s.get_width()//2, 50)))
 
         for i in range(4):
