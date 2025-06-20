@@ -5,9 +5,9 @@ from .gateGame.GameUI import GameUI
 from qiskit import QuantumCircuit
 from qiskit_aer.noise import NoiseModel, depolarizing_error
 
-from settings import WIDTH, HEIGHT, WHITE, BLACK, GREEN
-from core.scene import Scene
-from ui.widgets import Button
+from the_game.settings import WIDTH, HEIGHT, WHITE, BLACK, GREEN
+from the_game.core.scene import Scene
+from the_game.ui.widgets import Button
 
 class GateScene(Scene):
     GATE_COLORS = {"H": (200,200,255),"Z": (255,200,200),"Y": (200,255,200),"X": (255,255,200),"CNOT": (200,255,255),"SWAP": (255,200,255), "DECOH": (120,120,120)}
@@ -130,7 +130,7 @@ class GateScene(Scene):
             if self.dragging_gate:
                 self.drag_pos = event.pos
         if self.continue_button.handle_event(event):
-            from scenes.game import GameScene
+            from the_game.scenes.game import GameScene
             self.manager.go_to(GameScene(self.manager, self.players))
 
     def update(self, dt):
