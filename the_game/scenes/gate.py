@@ -66,8 +66,8 @@ class GateScene(Scene):
         elif event.type == pygame.MOUSEBUTTONDOWN:
             mx, my = event.pos
             # Compute button rects without drawing
-            skip_btn_rect = pygame.Rect(self.WIDTH - 350, self.HEIGHT - 80, 120, 50)
-            btn_rect = pygame.Rect(self.WIDTH - 180, self.HEIGHT - 80, 150, 50)
+            skip_btn_rect = pygame.Rect(self.WIDTH - 350, self.HEIGHT - 300, 120, 50)  # juste sous la mesure
+            btn_rect = pygame.Rect(self.WIDTH - 180, self.HEIGHT - 300, 150, 50)      # juste sous la mesure
             if skip_btn_rect.collidepoint(mx, my):
                 self.skipped_players.add(self.current_player)
                 self.next_player()
@@ -91,8 +91,9 @@ class GateScene(Scene):
                 gate_layer = max(0, len(self.gate_history) - 2)
                 drop_x = base_x + (gate_layer+2)*60
                 dropped = False
+                base_y = 100  # Correction pour aligner avec le circuit
                 for q in range(2):
-                    y = 150 + q*60
+                    y = base_y + q*60
                     if drop_x-20 < mx < drop_x+20 and y-20 < my < y+20:
                         if self.dragging_gate == "CNOT":
                             control = q
@@ -161,10 +162,10 @@ class GateScene(Scene):
         skip_btn_rect = GameUI.draw_skip_button(screen, self.font, self.WIDTH, self.HEIGHT)
         decoh_percent = self.get_decoherence_percent()
         decoh_txt = self.font.render(f"Decoherence chance: {decoh_percent}%", True, (120,0,0))
-        screen.blit(decoh_txt, (self.WIDTH-350, self.HEIGHT-180))
+        screen.blit(decoh_txt, (self.WIDTH-350, self.HEIGHT-400))  # encore 50px plus haut
         if self.measurement_result:
             txt = self.font.render(f"Measured: {self.measurement_result}", True, (0,0,0))
-            screen.blit(txt, (self.WIDTH-300, self.HEIGHT-140))
+            screen.blit(txt, (self.WIDTH-300, self.HEIGHT-340))
         if self.measurement_probs:
             GameUI.draw_probability_table(screen, self.font, self.measurement_probs, self.WIDTH, self.HEIGHT)
         if self.dragging_gate:
