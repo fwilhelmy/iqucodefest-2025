@@ -1,4 +1,4 @@
-import pygame, sys, itertools
+import pygame, sys, random
 import networkx as nx
 from settings import WHITE, BLACK, GREEN
 from core.scene import Scene
@@ -18,33 +18,56 @@ class GameScene(Scene):
     """
     def __init__(self, manager, players, n_turns, map_module):
         super().__init__(manager)
-        self.players, self.n_turns = players, n_turns
+        self.players = sorted(players, key=lambda p: p.order)
+        self.n_turns = n_turns
 
         # ── build graph ────────────────────────────────────────────────
         self.g: nx.DiGraph = map_module.build_graph()
+        self.start_node = list(self.g.nodes)[0]
 
-        # We keep an “active” node per player; just use player 0 for now
+        # assign basic sprites/colours and starting positions
+        colours = [
+            (60,120,240), (230,60,60),
+            (60,180,80), (190,80,200)
+        ]
+        for idx,p in enumerate(self.players):
+            p.position = self.start_node
+            col = colours[idx % len(colours)]
+            p.color = col
+            surf = pygame.Surface((24,24), pygame.SRCALPHA)
+            pygame.draw.circle(surf, col, (12,12), 12)
+            p.set_sprite(surf)
+
         self.active_idx = 0
-        self.active_node = list(self.g.nodes)[0]      # start on first node
-        self.edge_iter = itertools.cycle(self.g.successors(self.active_node))
+        self.last_roll = None
 
         self.font = pygame.font.SysFont(None, 28)
         self.big  = pygame.font.SysFont(None, 42)
 
     # ── simple navigation demo ─────────────────────────────────────────
-    def _pick_next_edge(self):
-        """Rotate cursor to the next outgoing edge."""
-        for _ in range(len(self.g)):
-            nxt = next(self.edge_iter)
-            if self.g.has_edge(self.active_node, nxt):
-                return nxt
-        return self.active_node
+    def _move_player(self, player, steps):
+        current = player.position
+        for _ in range(steps):
+            succ = list(self.g.successors(current))
+            if not succ:
+                break
+            current = random.choice(succ)
+        player.position = current
+
+    def roll_and_move(self):
+        player = self.players[self.active_idx]
+        d1, d2 = random.randint(1,6), random.randint(1,6)
+        steps = d1 + d2
+        self.last_roll = (player.name or f"P{player.slot+1}", d1, d2, steps)
+        self._move_player(player, steps)
+        self.active_idx = (self.active_idx + 1) % len(self.players)
 
     def handle_event(self, e):
         if e.type == pygame.KEYDOWN:
             if e.key == pygame.K_ESCAPE:          # back to menu
                 from scenes.menu import MenuScene
                 self.manager.go_to(MenuScene(self.manager))
+
             elif e.key in (pygame.K_LEFT, pygame.K_RIGHT):
                 self.cursor_target = self._pick_next_edge()
             elif e.key in (pygame.K_RETURN, pygame.K_SPACE):
@@ -55,6 +78,8 @@ class GameScene(Scene):
                     # Award a star if the node is of type 4
                     if self.g.nodes[self.active_node].get("type") == 4:
                         self.players[self.active_idx].add_stars(1)
+            elif e.key in (pygame.K_SPACE, pygame.K_RETURN):
+                self.roll_and_move()
 
         if e.type == pygame.QUIT:
             pygame.quit(); sys.exit()
@@ -94,24 +119,34 @@ class GameScene(Scene):
             img = self.big.render(label, True, BLACK)
             s.blit(img, img.get_rect(center=(x,y)))
 
-        # active pawn
-        ax, ay = self.g.nodes[self.active_node]["pos"]
-        pygame.draw.circle(s, (0,0,0), (ax,ay), 12)
+        # draw players on top of nodes
+        self._draw_players(s)
 
-        # highlight cursor target, if any
-        if hasattr(self, "cursor_target"):
-            tx, ty = self.g.nodes[self.cursor_target]["pos"]
-            pygame.draw.circle(s, GREEN, (tx,ty), 36, 4)
+    def _draw_players(self, s):
+        offsets = [(-15,-40), (15,-40), (-15,-60), (15,-60)]
+        for idx, p in enumerate(self.players):
+            x, y = self.g.nodes[p.position]["pos"]
+            dx, dy = offsets[idx % len(offsets)]
+            if p.sprite:
+                r = p.sprite.get_rect(center=(x+dx, y+dy))
+                s.blit(p.sprite, r)
+            else:
+                pygame.draw.circle(s, p.color, (x+dx, y+dy), 12)
+            if idx == self.active_idx:
+                pygame.draw.circle(s, GREEN, (x+dx, y+dy), 14, 2)
 
     def draw(self, s):
         s.fill(WHITE)
         self._draw_edges(s)
         self._draw_nodes(s)
 
-        # HUD
-        txt = self.font.render(
-            f"Node {self.active_node}   |   {self.n_turns} turns total",
-            True, BLACK)
+        # HUD showing whose turn and last roll
+        turn_name = self.players[self.active_idx].name or f"P{self.players[self.active_idx].slot+1}"
+        hud = f"Turn: {turn_name}"
+        if self.last_roll:
+            name,d1,d2,total = self.last_roll
+            hud += f"  |  {name} rolled {d1}+{d2}→{total}"
+        txt = self.font.render(hud, True, BLACK)
         s.blit(txt, (10, 10))
 
         # Display star count for each player

@@ -57,4 +57,26 @@ For detailed setup instructions and troubleshooting, refer to `python_project_se
 
 ---
 
-You now have all the tools and resources needed to participate in the hackathon. Good luck and have fun exploring quantum computing!
+## Building New Game Maps
+
+The Pygame prototype stores each board as a directed graph. You can describe
+new maps using a compact YAML file and load them with
+`build_graph_from_yaml`.
+
+1. Create a YAML file with `nodes` and `edges` (see
+   `the_game/maps/example_map.yml` for a full example).
+2. Load it in your code:
+
+   ```python
+   from the_game.maps.yaml_map import build_graph_from_yaml
+
+   graph = build_graph_from_yaml("the_game/maps/example_map.yml")
+   ```
+
+If the YAML file omits pixel positions, coordinates are generated
+automatically using NetworkX's spring layout.
+
+---
+
+You now have all the tools and resources needed to participate in the hackathon.
+Good luck and have fun exploring quantum computing!
