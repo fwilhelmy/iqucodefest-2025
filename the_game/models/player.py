@@ -2,7 +2,9 @@ class Player:
 
     # ---- getters / setters ----
     def get_gates(self):      return self.gates
-    def add_gates(self, gate:str, n:int=1): self.gates[gate] += n
+    def add_gates(self, gate: str, n: int = 1):
+        """Add ``n`` of the specified ``gate`` to the player's inventory."""
+        self.gates[gate] = self.gates.get(gate, 0) + n
     def set_gates(self, new_gates:dict):
         self.gates = new_gates
     def set_name(self, new):  self.name = new
