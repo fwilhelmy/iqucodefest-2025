@@ -1,7 +1,8 @@
 import pygame, sys, random
 import networkx as nx
-from settings import WHITE, BLACK, GREEN
+from settings import WIDTH, HEIGHT, WHITE, BLACK, GREEN
 from core.scene import Scene
+from ui.widgets import Button
 
 # colour palette for node types
 TYPE_COLOUR = {
@@ -40,9 +41,13 @@ class GameScene(Scene):
 
         self.active_idx = 0
         self.last_roll = None
+        self.pending_rolls = []          # store dice rolled so far
 
         self.font = pygame.font.SysFont(None, 28)
         self.big  = pygame.font.SysFont(None, 42)
+
+        # button used to roll the dice one at a time
+        self.roll_button = Button("Roll", (WIDTH - 80, HEIGHT - 40))
 
     # ── simple navigation demo ─────────────────────────────────────────
     def _move_player(self, player, steps):
@@ -54,13 +59,26 @@ class GameScene(Scene):
             current = random.choice(succ)
         player.position = current
 
-    def roll_and_move(self):
-        player = self.players[self.active_idx]
-        d1, d2 = random.randint(1,6), random.randint(1,6)
-        steps = d1 + d2
-        self.last_roll = (player.name or f"P{player.slot+1}", d1, d2, steps)
-        self._move_player(player, steps)
-        self.active_idx = (self.active_idx + 1) % len(self.players)
+        # Award a star if the landing node is of the star type
+        if self.g.nodes[current].get("type") == 4:
+            player.add_stars(1)
+
+    def _roll_one_die(self):
+        """Roll a single die and store the result."""
+        value = random.randint(1, 6)
+        self.pending_rolls.append(value)
+
+        # When both dice are rolled, move the player
+        if len(self.pending_rolls) == 2:
+            player = self.players[self.active_idx]
+            d1, d2 = self.pending_rolls
+            steps = d1 + d2
+            self.last_roll = (
+                player.name or f"P{player.slot+1}", d1, d2, steps
+            )
+            self._move_player(player, steps)
+            self.active_idx = (self.active_idx + 1) % len(self.players)
+            self.pending_rolls.clear()
 
     def handle_event(self, e):
         if e.type == pygame.KEYDOWN:
@@ -68,18 +86,11 @@ class GameScene(Scene):
                 from scenes.menu import MenuScene
                 self.manager.go_to(MenuScene(self.manager))
 
-            elif e.key in (pygame.K_LEFT, pygame.K_RIGHT):
-                self.cursor_target = self._pick_next_edge()
-            elif e.key in (pygame.K_RETURN, pygame.K_SPACE):
-                # move the pawn
-                if hasattr(self, "cursor_target"):
-                    self.active_node = self.cursor_target
-                    self.edge_iter = itertools.cycle(self.g.successors(self.active_node))
-                    # Award a star if the node is of type 4
-                    if self.g.nodes[self.active_node].get("type") == 4:
-                        self.players[self.active_idx].add_stars(1)
             elif e.key in (pygame.K_SPACE, pygame.K_RETURN):
-                self.roll_and_move()
+                self._roll_one_die()
+
+        if self.roll_button.handle_event(e):
+            self._roll_one_die()
 
         if e.type == pygame.QUIT:
             pygame.quit(); sys.exit()
@@ -153,3 +164,6 @@ class GameScene(Scene):
         for i, p in enumerate(self.players):
             info = self.font.render(f"{p.name}: {p.stars}★", True, BLACK)
             s.blit(info, (10, 40 + i*20))
+
+        # Roll button
+        self.roll_button.draw(s)
