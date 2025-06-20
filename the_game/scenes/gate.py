@@ -14,11 +14,13 @@ class GateScene(Scene):
     GATE_LIST = ["H","Z","Y","X","CNOT","SWAP"]
     MAX_GATES = 20
 
-    def __init__(self, manager, players, n_turns, map_module):
+    def __init__(self, manager, players, n_turns, map_module, previous_scene=None):
         super().__init__(manager)
         self.players = players
         self.n_turns = n_turns
         self.map_module = map_module
+        # reference to the GameScene to return to
+        self.previous_scene = previous_scene
         # Always ensure all gates are present for each player
         for p in self.players:
             if not hasattr(p, "gates") or not isinstance(p.gates, dict):
@@ -138,10 +140,14 @@ class GateScene(Scene):
             if self.dragging_gate:
                 self.drag_pos = event.pos
         if self.continue_button.handle_event(event):
-            from the_game.scenes.game import GameScene
-            self.manager.go_to(
-                GameScene(self.manager, self.players, self.n_turns, self.map_module)
-            )
+            if self.previous_scene is not None:
+                self.previous_scene.apply_measurement(self.measurement_result or "00")
+                self.manager.go_to(self.previous_scene)
+            else:
+                from the_game.scenes.game import GameScene
+                self.manager.go_to(
+                    GameScene(self.manager, self.players, self.n_turns, self.map_module)
+                )
 
     def update(self, dt):
         pass  # No time-based updates needed for this minigame

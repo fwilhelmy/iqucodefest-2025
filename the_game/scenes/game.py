@@ -40,6 +40,8 @@ class GameScene(Scene):
 
         # ── build graph ────────────────────────────────────────────────
         self.g: nx.DiGraph = map_module.build_graph()
+        # remember original edge directions so the board can be reset
+        self._base_edges = list(self.g.edges())
         self.start_node = list(self.g.nodes)[0]
 
         # assign basic sprites/colours and starting positions
@@ -99,9 +101,35 @@ class GameScene(Scene):
                 n for n, d in self.g.nodes(data=True)
                 if d.get("type") == 1 and n != node_id
             ]
-            if candidates:
-                new_star = random.choice(candidates)
-                self.g.nodes[new_star]["type"] = 4
+        if candidates:
+            new_star = random.choice(candidates)
+            self.g.nodes[new_star]["type"] = 4
+
+    # ── board manipulation based on minigame results ────────────────
+    def apply_measurement(self, result: str | None):
+        """Apply measurement outcome from the gate minigame to the board."""
+        # reset edges to their original configuration
+        self.g.remove_edges_from(list(self.g.edges()))
+        self.g.add_edges_from(self._base_edges)
+
+        if not result or result == "00":
+            return
+
+        if result == "11":
+            reversed_edges = [(v, u) for u, v in self._base_edges]
+            self.g.remove_edges_from(list(self.g.edges()))
+            self.g.add_edges_from(reversed_edges)
+            return
+
+        # result is 01 or 10
+        restrict_first = result == "01"
+        for n, data in list(self.g.nodes(data=True)):
+            if data.get("type") == 3:
+                succ = sorted(self.g.successors(n))
+                if len(succ) >= 2:
+                    edge_to_remove = succ[0] if restrict_first else succ[1]
+                    if self.g.has_edge(n, edge_to_remove):
+                        self.g.remove_edge(n, edge_to_remove)
 
     def _end_move(self):
         current = self.moving_player.position
@@ -125,7 +153,8 @@ class GameScene(Scene):
                     from the_game.scenes.gate import GateScene
                     # Passe la liste des joueurs telle quelle, sans tri supplémentaire
                     self.manager.go_to(GateScene(
-                        self.manager, self.players, self.n_turns, self.map_module
+                        self.manager, self.players, self.n_turns, self.map_module,
+                        previous_scene=self
                     ))
                 except Exception as e:
                     print(f"Erreur lors de la transition vers GateScene : {e}")
