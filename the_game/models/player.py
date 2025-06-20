@@ -12,7 +12,9 @@ class Player:
     def __init__(self, slot):
         self.name: str = ""
         self.position: int = 0                      # Space ID
-        self.gates: dict = {'H':0,'X':0,'Y':0,'Z':0}  # gate counts
+        # Players start with a basic set of Pauli gates so they can
+        # immediately interact with the quantum board mechanics.
+        self.gates: dict = {'H':0, 'X':1, 'Y':1, 'Z':1}  # starting gate counts
         self.slot = slot
         self.name = ""
         self.order = slot + 1
