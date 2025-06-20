@@ -20,6 +20,13 @@ class GameScene(Scene):
     CAM_SPEED = 400  # pixels per second
     MOVE_DELAY = 0.4  # seconds between steps when walking
 
+    ZOOM_STEP = 0.1
+
+    def _clamp_zoom(self, zoom: float) -> float:
+        """Clamp zoom level to a sane range."""
+        return max(0.2, min(zoom, 3.0))
+
+
     def __init__(self, manager, players, n_turns, map_module):
         super().__init__(manager)
         self.players = sorted(players, key=lambda p: p.order)
@@ -55,6 +62,7 @@ class GameScene(Scene):
         # Camera offset when drawing large maps
         self.cam_x = 0
         self.cam_y = 0
+        self.zoom = 1.0
 
         # movement animation state
         self.moving_player = None
@@ -130,12 +138,21 @@ class GameScene(Scene):
             if self.roll_button.handle_event(e):
                 self._roll_one_die()
 
+
+            elif e.key == pygame.K_MINUS:
+                self.zoom = self._clamp_zoom(self.zoom - self.ZOOM_STEP)
+            elif e.key == pygame.K_EQUALS:
+                self.zoom = self._clamp_zoom(self.zoom + self.ZOOM_STEP)
+
+        if self.roll_button.handle_event(e):
+            self._roll_one_die()
+
         if e.type == pygame.QUIT:
             pygame.quit(); sys.exit()
 
     def update(self, dt):
         keys = pygame.key.get_pressed()
-        spd = self.CAM_SPEED * dt
+        spd = self.CAM_SPEED * dt / self.zoom
         if keys[pygame.K_LEFT]:  self.cam_x += spd
         if keys[pygame.K_RIGHT]: self.cam_x -= spd
         if keys[pygame.K_UP]:    self.cam_y += spd
@@ -164,28 +181,33 @@ class GameScene(Scene):
         for u, v in self.g.edges:
             x1, y1 = self.g.nodes[u]["pos"]
             x2, y2 = self.g.nodes[v]["pos"]
-            x1 += self.cam_x; y1 += self.cam_y
-            x2 += self.cam_x; y2 += self.cam_y
-            pygame.draw.line(s, BLACK, (x1, y1), (x2, y2), 3)
+            x1 = x1 * self.zoom + self.cam_x
+            y1 = y1 * self.zoom + self.cam_y
+            x2 = x2 * self.zoom + self.cam_x
+            y2 = y2 * self.zoom + self.cam_y
+            width = max(1, int(3 * self.zoom))
+            pygame.draw.line(s, BLACK, (x1, y1), (x2, y2), width)
             # little arrow-head
             vx, vy = x2 - x1, y2 - y1
             length = max((vx*vx + vy*vy) ** 0.5, 1)
             ux, uy = vx / length, vy / length
             perp = (-uy, ux)
-            tip  = (x2 - ux * 20, y2 - uy * 20)
-            left = (tip[0] + perp[0]*8, tip[1] + perp[1]*8)
-            rght = (tip[0] - perp[0]*8, tip[1] - perp[1]*8)
+            scale = 20 * self.zoom
+            tip  = (x2 - ux * scale, y2 - uy * scale)
+            left = (tip[0] + perp[0]*8*self.zoom, tip[1] + perp[1]*8*self.zoom)
+            rght = (tip[0] - perp[0]*8*self.zoom, tip[1] - perp[1]*8*self.zoom)
             pygame.draw.polygon(s, BLACK, [ (x2,y2), left, rght ])
 
     def _draw_nodes(self, s):
         for n, data in self.g.nodes(data=True):
             x, y = data["pos"]
-            x += self.cam_x; y += self.cam_y
+            x = x * self.zoom + self.cam_x
+            y = y * self.zoom + self.cam_y
             col  = TYPE_COLOUR[data["type"]]
-            # reduce node radius from 30px to 20px so the board looks less
-            # crowded on smaller screens
-            pygame.draw.circle(s, col, (x,y), 20)
-            pygame.draw.circle(s, BLACK, (x,y), 20, 3)
+            radius = max(10, int(30 * self.zoom))
+            pygame.draw.circle(s, col, (x, y), radius)
+            pygame.draw.circle(s, BLACK, (x, y), radius, max(1, int(3 * self.zoom)))
+
 
             if data["type"] in (1,2):
                 if "value" in data and data["value"] is not None:
@@ -199,7 +221,11 @@ class GameScene(Scene):
                 label = "*"  # previously used ★ which may not render
 
             img = self.big.render(label, True, BLACK)
-            s.blit(img, img.get_rect(center=(x,y)))
+            if self.zoom != 1.0:
+                w = max(1, int(img.get_width() * self.zoom))
+                h = max(1, int(img.get_height() * self.zoom))
+                img = pygame.transform.smoothscale(img, (w, h))
+            s.blit(img, img.get_rect(center=(x, y)))
 
         # draw players on top of nodes
         self._draw_players(s)
@@ -208,15 +234,21 @@ class GameScene(Scene):
         offsets = [(-15,-40), (15,-40), (-15,-60), (15,-60)]
         for idx, p in enumerate(self.players):
             x, y = self.g.nodes[p.position]["pos"]
-            x += self.cam_x; y += self.cam_y
+            x = x * self.zoom + self.cam_x
+            y = y * self.zoom + self.cam_y
             dx, dy = offsets[idx % len(offsets)]
+            dx *= self.zoom; dy *= self.zoom
             if p.sprite:
-                r = p.sprite.get_rect(center=(x+dx, y+dy))
-                s.blit(p.sprite, r)
+                img = p.sprite
+                if self.zoom != 1.0:
+                    size = int(img.get_width() * self.zoom), int(img.get_height() * self.zoom)
+                    img = pygame.transform.smoothscale(img, size)
+                r = img.get_rect(center=(x+dx, y+dy))
+                s.blit(img, r)
             else:
-                pygame.draw.circle(s, p.color, (x+dx, y+dy), 12)
+                pygame.draw.circle(s, p.color, (int(x+dx), int(y+dy)), int(12*self.zoom))
             if idx == self.active_idx:
-                pygame.draw.circle(s, GREEN, (x+dx, y+dy), 14, 2)
+                pygame.draw.circle(s, GREEN, (int(x+dx), int(y+dy)), int(14*self.zoom), max(1, int(2*self.zoom)))
 
     def draw(self, s):
         s.fill(WHITE)
@@ -233,6 +265,9 @@ class GameScene(Scene):
         s.blit(txt, (10, 10))
         turns_txt = self.font.render(f"Turns left: {self.n_turns}", True, BLACK)
         s.blit(turns_txt, (WIDTH - turns_txt.get_width() - 10, 10))
+
+        zoom_txt = self.font.render(f"Zoom: {self.zoom:.1f}x", True, BLACK)
+        s.blit(zoom_txt, (WIDTH - zoom_txt.get_width() - 10, 30))
 
         # Display stars and gate counts for each player
         for i, p in enumerate(self.players):
