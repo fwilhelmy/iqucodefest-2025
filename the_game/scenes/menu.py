@@ -18,6 +18,10 @@ class MenuScene(Scene):
         # background image
         self.background = pygame.image.load("resources/superquantumparty.png").convert_alpha()
 
+        # ── background music ────────────────────────────────────────────
+        pygame.mixer.music.load("resources/audio/menu_music.mp3")
+        pygame.mixer.music.play(-1)
+
         # ─── build UI ────────────────────────────────────────────────
         self.players_ui=[]
         order_opts=[1,2,3,4]
@@ -47,6 +51,7 @@ class MenuScene(Scene):
         self.turn_toggle.handle_event(e); self.map_select.handle_event(e)
 
         if self.play_btn.handle_event(e):
+            pygame.mixer.music.stop()
             players, n_turns = self._collect_menu_data()
             idx         = self.map_select.index        # 0,1,2…
             module_path = MAP_FILES[idx]               # maps.example_map
@@ -57,6 +62,7 @@ class MenuScene(Scene):
 
 
         if e.type == pygame.QUIT:
+            pygame.mixer.music.stop()
             pygame.quit(); sys.exit()
 
     def update(self, dt): pass
