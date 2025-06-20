@@ -88,12 +88,23 @@ class GameScene(Scene):
         self.branch_options = []
         self.branch_index = 0
 
+    def _check_star(self, node_id, player):
+        """Handle star collection when ``player`` lands on ``node_id``."""
+        if self.g.nodes[node_id].get("type") == 4:
+            player.add_stars(1)
+            self.g.nodes[node_id]["type"] = 1
+            candidates = [
+                n for n, d in self.g.nodes(data=True)
+                if d.get("type") == 1 and n != node_id
+            ]
+            if candidates:
+                new_star = random.choice(candidates)
+                self.g.nodes[new_star]["type"] = 4
+
     def _end_move(self):
         current = self.moving_player.position
         node_type = self.g.nodes[current].get("type")
-        if node_type == 4:
-            self.moving_player.add_stars(1)
-        elif node_type == 1:
+        if node_type == 1:
             available = ["X", "Y", "Z", "SX", "H", "SWAP", "CNOT"]
             for _ in range(random.randint(1, 4)):
                 gate = random.choice(available)
@@ -145,6 +156,7 @@ class GameScene(Scene):
             if e.key in (pygame.K_RETURN, pygame.K_SPACE):
                 next_node = self.branch_options[self.branch_index]
                 self.moving_player.position = next_node
+                self._check_star(next_node, self.moving_player)
                 self.steps_remaining -= 1
                 self.awaiting_choice = False
                 self.move_timer = self.MOVE_DELAY
@@ -188,6 +200,7 @@ class GameScene(Scene):
                     self.branch_index = 0
                 else:
                     self.moving_player.position = succ[0]
+                    self._check_star(succ[0], self.moving_player)
                     self.steps_remaining -= 1
                     self.move_timer = self.MOVE_DELAY
                     if self.steps_remaining <= 0:
