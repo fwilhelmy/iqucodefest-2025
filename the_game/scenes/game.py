@@ -101,9 +101,9 @@ class GameScene(Scene):
                 n for n, d in self.g.nodes(data=True)
                 if d.get("type") == 1 and n != node_id
             ]
-        if candidates:
-            new_star = random.choice(candidates)
-            self.g.nodes[new_star]["type"] = 4
+            if candidates:
+                new_star = random.choice(candidates)
+                self.g.nodes[new_star]["type"] = 4
 
     # ── board manipulation based on minigame results ────────────────
     def apply_measurement(self, result: str | None):
