@@ -22,7 +22,6 @@ def quantum_walk_roll(step=6):
             qc = controlled_displacement(qc)
             qc.h(0)
         qc.measure([1, 2, 3], [0, 1, 2])
-        qc.draw(output='mpl', filename='quantum_walk_roll.png')
         result = _simulator.run(qc, shots=1000).result()
         counts = result.get_counts()
         outcome = list(counts.keys())[0]
