@@ -58,6 +58,8 @@ class GameScene(Scene):
 
         # button used to roll the dice one at a time
         self.roll_button = Button("Roll", (WIDTH - 80, HEIGHT - 40))
+        # load dice roll sound
+        self.dice_sound = pygame.mixer.Sound("resources/audio/dice_roll.mp3")
 
         # Camera offset when drawing large maps
         self.cam_x = 0
@@ -107,6 +109,8 @@ class GameScene(Scene):
     def _roll_one_die(self):
         """Roll a single die and store the result."""
         value = random.randint(1, 6)
+        # play dice roll sound
+        self.dice_sound.play()
         self.pending_rolls.append(value)
 
         # When both dice are rolled, start walking animation
