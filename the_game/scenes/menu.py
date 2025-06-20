@@ -21,6 +21,7 @@ class MenuScene(Scene):
         # ── background music ────────────────────────────────────────────
         pygame.mixer.music.load("resources/audio/menu_music.mp3")
         pygame.mixer.music.play(-1)
+        pygame.mixer.music.set_volume(0.5)  # Set volume to 50%
 
         # ─── build UI ────────────────────────────────────────────────
         self.players_ui=[]
@@ -73,10 +74,10 @@ class MenuScene(Scene):
         s.blit(self.background, bg_rect)
 
         # translucent panel for menu elements
-        panel = pygame.Surface((980, 420), pygame.SRCALPHA)
+        panel = pygame.Surface((980, 520), pygame.SRCALPHA)
         panel.fill((255, 255, 255, 220))
         s.blit(panel, (60, 120))
-        pygame.draw.rect(s, BLACK, pygame.Rect(60, 120, 980, 420), 2)
+        pygame.draw.rect(s, BLACK, pygame.Rect(60, 120, 980, 520), 2)
 
         title = widgets.FONT_L.render("Super Quantum Party", True, GREEN)
         s.blit(title, title.get_rect(center=(s.get_width()//2, 150)))
