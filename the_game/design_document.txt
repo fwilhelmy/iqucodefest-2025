@@ -16,7 +16,7 @@ sélection manuelle de l'ordre des tours pour chaque joueur initiallement (qui s
 lancer les deux dé pour le premier joueur
 le premier joueur avance sur la map
 si il arrive sur un embranchement, il peut choisir son chemin
-selon la case, un évènement se case.
+selon la case, un évènement se passe.
 si il passe devant une étoile, il prend cette étoile. (si temps, requis pour acheter l'étoile : T gate)
 on répète avec les autres joueurs.
 minigame happen (nothing for now) -> reward is : 
