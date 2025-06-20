@@ -16,7 +16,7 @@ Une fois fait, cliquez sur Play pour commencer.
 Vous tombez alors dans un jeux similaire à super mario party, seulement version quantique :
 - Vous roulez le dé quantique faisant une marche aléatoire quantique en cliquant sur Espace. (en phase 2, les distributions du dé change pour mieu tirer de cette distribution)
 - Votre joueur se déplace dépendemment du nombre que vous avez obtenu en lançant le dé. 
-- Si vous atterissez sur une case bleu, vous obtiendrez entre 1 à 4 partes quantiques dans votre inventaire.
+- Si vous atterissez sur une case bleu, vous obtiendrez entre 1 à 4 portes quantiques dans votre inventaire.
 - Si vous passer devant une étoile, vous gagnez une étoile dans votre inventaire.
 - À chaque intersection, vous devez choisir le chemin sur lequel vous voulez allez. pour ce faire, utiliser les flèches sur votre clavier d'ordinateur et cliquer par la suite sur espace.
 - à la fin de chaque tour, un mini-jeux apparait ! ce mini jeux permet de naviguer les différentes superposition de la carte (le graph avec noeuds). si l'état final mesuré est 01 ou 10, alors les "rivière" et les "portes" du niveau sont mesurer et ils "collapsent" vers seulement un chemin possible. Si l'état 11 est mesurer, la carte collapse sa superposition et le graph dirigé inverse sa direction. les joueurs doivent stratégiquement placer leur portes qu'ils ont collecter de sorte à obtenir l'état quantique qu'ils veulent. L'objectif étant de désavantager les autres d'obtenir une étoile tout en essayant de s'avantager.
