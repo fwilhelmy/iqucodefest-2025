@@ -116,7 +116,7 @@ class GameScene(Scene):
         if self.active_idx == 0:
             self.n_turns -= 1
             if self.n_turns <= 0:
-                from scenes.winner import WinnerScene
+                from the_game.scenes.winner import WinnerScene
                 self.manager.go_to(WinnerScene(self.manager, self.players))
             else:
                 try:
