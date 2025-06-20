@@ -1,5 +1,5 @@
 import pygame, sys
-from settings import WIDTH, HEIGHT, WHITE, BLACK
+from settings import WIDTH, HEIGHT, WHITE, BLACK, YELLOW
 from core.scene import Scene
 from ui.widgets import Button
 
@@ -11,8 +11,9 @@ class WinnerScene(Scene):
             players,
             key=lambda p: (-p.stars, -sum(p.gates.values()))
         )
-        self.font_big = pygame.font.SysFont(None, 48)
-        self.font = pygame.font.SysFont(None, 32)
+        comic = pygame.font.match_font("comicsansms")
+        self.font_big = pygame.font.Font(comic or pygame.font.get_default_font(), 64)
+        self.font = pygame.font.Font(comic or pygame.font.get_default_font(), 36)
         self.button = Button("Menu", (WIDTH//2, HEIGHT - 60))
 
     def handle_event(self, e):
@@ -30,10 +31,14 @@ class WinnerScene(Scene):
 
     def draw(self, s):
         s.fill(WHITE)
-        title = self.font_big.render("Results", True, BLACK)
-        s.blit(title, title.get_rect(center=(WIDTH//2, 80)))
+        title = self.font_big.render("Results", True, YELLOW)
+        s.blit(title, title.get_rect(center=(WIDTH // 2, 80)))
         for i, p in enumerate(self.players):
             text = f"{i+1}. {p.name} - {p.stars}\u2605 - {sum(p.gates.values())} gates"
             img = self.font.render(text, True, BLACK)
-            s.blit(img, (WIDTH//2 - img.get_width()//2, 150 + i*40))
+            pos = (WIDTH // 2 - img.get_width() // 2, 150 + i * 50)
+            if i == 0:
+                bg = img.get_rect(topleft=pos).inflate(20, 10)
+                pygame.draw.rect(s, YELLOW, bg)
+            s.blit(img, pos)
         self.button.draw(s)
