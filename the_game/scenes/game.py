@@ -35,6 +35,7 @@ class GameScene(Scene):
         super().__init__(manager)
         self.players = sorted(players, key=lambda p: p.order)
         self.n_turns = n_turns  # remaining turns
+        self.map_module = map_module
 
         # ── build graph ────────────────────────────────────────────────
         self.g: nx.DiGraph = map_module.build_graph()
@@ -122,7 +123,9 @@ class GameScene(Scene):
                 try:
                     from the_game.scenes.gate import GateScene
                     # Passe la liste des joueurs telle quelle, sans tri supplémentaire
-                    self.manager.go_to(GateScene(self.manager, self.players))
+                    self.manager.go_to(GateScene(
+                        self.manager, self.players, self.n_turns, self.map_module
+                    ))
                 except Exception as e:
                     print(f"Erreur lors de la transition vers GateScene : {e}")
                     raise
@@ -153,7 +156,11 @@ class GameScene(Scene):
             if self.roll_button.handle_event(e) or (e.type == pygame.KEYDOWN and e.key in roll_keys):
                 self._roll_one_die()
         elif self.awaiting_choice and e.type == pygame.KEYDOWN:
-            if e.key in (pygame.K_RETURN, pygame.K_SPACE):
+            if e.key in (pygame.K_LEFT, pygame.K_a):
+                self.branch_index = (self.branch_index - 1) % len(self.branch_options)
+            elif e.key in (pygame.K_RIGHT, pygame.K_d):
+                self.branch_index = (self.branch_index + 1) % len(self.branch_options)
+            elif e.key in (pygame.K_RETURN, pygame.K_SPACE):
                 next_node = self.branch_options[self.branch_index]
                 self.moving_player.position = next_node
                 self._check_star(next_node, self.moving_player)
@@ -313,6 +320,6 @@ class GameScene(Scene):
                 ("["+n+"]" if i==self.branch_index else n)
                 for i,n in enumerate(self.branch_options)
             ]
-            msg = "Choose path: " + " ".join(opts) + "  (\u2190/\u2192+Enter)"
+            msg = "Choose path: " + " ".join(opts) + "  (<-/->+Enter)"
             img = self.font.render(msg, True, BLACK)
             s.blit(img, (10, HEIGHT - 30))
