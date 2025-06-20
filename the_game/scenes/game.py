@@ -90,8 +90,14 @@ class GameScene(Scene):
 
     def _end_move(self):
         current = self.moving_player.position
-        if self.g.nodes[current].get("type") == 4:
+        node_type = self.g.nodes[current].get("type")
+        if node_type == 4:
             self.moving_player.add_stars(1)
+        elif node_type == 1:
+            available = ["X", "Y", "Z", "SX", "H", "SWAP", "CNOT"]
+            for _ in range(random.randint(1, 4)):
+                gate = random.choice(available)
+                self.moving_player.add_gates(gate)
         self.moving_player = None
         self.steps_remaining = 0
         self.pending_rolls.clear()
