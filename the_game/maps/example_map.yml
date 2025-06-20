@@ -1,0 +1,18 @@
+nodes:
+  A: {type: 1, value: 2}
+  B: {type: 1, value: 4}
+  C: {type: 2, value: 1}
+  D: {type: 3, trigger: ["01", "11"]}
+  E: {type: 4}
+edges:
+  - [A, B]
+  - [B, C]
+  - [A, D]
+  - [D, E]
+  - [E, C]
+pos:
+  A: [150, 120]
+  B: [380, 120]
+  C: [610, 260]
+  D: [380, 260]
+  E: [380, 420]
