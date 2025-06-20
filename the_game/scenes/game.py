@@ -91,10 +91,15 @@ class GameScene(Scene):
         self.steps_remaining = 0
         self.pending_rolls.clear()
         self.active_idx = (self.active_idx + 1) % len(self.players)
-        self.n_turns -= 1
-        if self.n_turns <= 0:
-            from scenes.winner import WinnerScene
-            self.manager.go_to(WinnerScene(self.manager, self.players))
+        if self.active_idx == 0:
+            # If all players have had their turn, reduce the turn count
+            self.n_turns -= 1
+            if self.n_turns <= 0:
+                from scenes.winner import WinnerScene
+                self.manager.go_to(WinnerScene(self.manager, self.players))
+            else:
+                print("BATTTTTTLEEEE!!!")
+                # TODO SWITCH TO QUANTUM BATTLE SCENE
 
     def _roll_one_die(self):
         """Roll a single die and store the result."""
@@ -115,14 +120,12 @@ class GameScene(Scene):
         if e.type == pygame.KEYDOWN and e.key == pygame.K_ESCAPE:
             from scenes.menu import MenuScene
             self.manager.go_to(MenuScene(self.manager))
-            return
-
-        if self.awaiting_choice and e.type == pygame.KEYDOWN:
-            if e.key == pygame.K_LEFT:
-                self.branch_index = (self.branch_index - 1) % len(self.branch_options)
-            elif e.key == pygame.K_RIGHT:
-                self.branch_index = (self.branch_index + 1) % len(self.branch_options)
-            elif e.key in (pygame.K_RETURN, pygame.K_SPACE):
+        elif self.moving_player is None:
+            roll_keys = (pygame.K_SPACE, pygame.K_RETURN, pygame.K_r)
+            if self.roll_button.handle_event(e) or (e.type == pygame.KEYDOWN and e.key in roll_keys):
+                self._roll_one_die()
+        elif self.awaiting_choice and e.type == pygame.KEYDOWN:
+            if e.key in (pygame.K_RETURN, pygame.K_SPACE):
                 next_node = self.branch_options[self.branch_index]
                 self.moving_player.position = next_node
                 self.steps_remaining -= 1
@@ -130,6 +133,7 @@ class GameScene(Scene):
                 self.move_timer = self.MOVE_DELAY
                 if self.steps_remaining <= 0:
                     self._end_move()
+<<<<<<< HEAD
             return
 
         if self.moving_player is None:
@@ -143,7 +147,20 @@ class GameScene(Scene):
             self._roll_one_die()
 
         if e.type == pygame.QUIT:
+=======
+            elif e.key == pygame.K_MINUS:
+                self.zoom = self._clamp_zoom(self.zoom - self.ZOOM_STEP)
+            elif e.key == pygame.K_EQUALS:
+                self.zoom = self._clamp_zoom(self.zoom + self.ZOOM_STEP)
+            elif e.key == pygame.K_LEFT:
+                self.branch_index = (self.branch_index - 1) % len(self.branch_options)
+            elif e.key == pygame.K_RIGHT:
+                self.branch_index = (self.branch_index + 1) % len(self.branch_options)
+        elif e.type == pygame.QUIT:
+>>>>>>> 9dddb727984b620f6e511980f31a14e9b3b83a0c
             pygame.quit(); sys.exit()
+
+        
 
     def update(self, dt):
         keys = pygame.key.get_pressed()
