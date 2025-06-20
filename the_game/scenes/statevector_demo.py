@@ -6,7 +6,7 @@ from qiskit.visualization import plot_bloch_vector
 import matplotlib.pyplot as plt
 
 from settings import WIDTH, HEIGHT, WHITE, BLACK
-from core.scene import Scene, SceneManager
+from the_game.core.scene import Scene, SceneManager
 
 class StatevectorDemo(Scene):
     """Simple interactive demo manipulating a single-qubit state."""

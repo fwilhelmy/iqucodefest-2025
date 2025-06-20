@@ -1,8 +1,8 @@
 import pygame, sys
-from settings import WIDTH, HEIGHT, FPS
-from ui.widgets import init_fonts
-from core.scene import SceneManager
-from scenes.menu import MenuScene
+from the_game.settings import WIDTH, HEIGHT, FPS
+from the_game.ui.widgets import init_fonts
+from the_game.core.scene import SceneManager
+from the_game.scenes.menu import MenuScene
 
 # ─── initialise Pygame & fonts ─────────────────────────────────────────
 pygame.init()
