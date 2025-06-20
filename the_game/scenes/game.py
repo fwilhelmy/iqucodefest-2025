@@ -1,4 +1,5 @@
 import pygame, sys, random
+from the_game.quantum_dice import quantum_walk_roll
 import networkx as nx
 from the_game.settings import WIDTH, HEIGHT, WHITE, BLACK, GREEN
 from the_game.core.scene import Scene
@@ -132,7 +133,7 @@ class GameScene(Scene):
 
     def _roll_one_die(self):
         """Roll a single die and store the result."""
-        value = random.randint(1, 6)
+        value = quantum_walk_roll()
         # play dice roll sound
         self.dice_sound.play()
         self.pending_rolls.append(value)
