@@ -1,5 +1,5 @@
 import pygame, sys
-from the_game.settings import BLACK, WHITE, GREEN, MAP_FILES, MAP_THUMBS
+from the_game.settings import BLACK, WHITE, GREEN, MAP_FILES, MAP_THUMBS, WIDTH, HEIGHT
 from the_game.models.player import Player
 from the_game.ui import widgets                   
 from the_game.core.scene import Scene
@@ -17,6 +17,7 @@ class MenuScene(Scene):
 
         # background image
         self.background = pygame.image.load("resources/superquantumparty.png").convert_alpha()
+        self.background = pygame.transform.scale(self.background, (WIDTH, HEIGHT))
 
         # ── background music ────────────────────────────────────────────
         pygame.mixer.music.load("resources/audio/menu_music.mp3")
@@ -71,7 +72,7 @@ class MenuScene(Scene):
     def draw(self, s):
         # draw background centered without scaling
         bg_rect = self.background.get_rect(center=s.get_rect().center)
-        s.blit(self.background, bg_rect)
+        s.blit(self.background, (bg_rect))
 
         # translucent panel for menu elements
         panel = pygame.Surface((980, 520), pygame.SRCALPHA)
@@ -79,8 +80,8 @@ class MenuScene(Scene):
         s.blit(panel, (60, 120))
         pygame.draw.rect(s, BLACK, pygame.Rect(60, 120, 980, 520), 2)
 
-        title = widgets.FONT_L.render("Super Quantum Party", True, GREEN)
-        s.blit(title, title.get_rect(center=(s.get_width()//2, 150)))
+        title = widgets.FONT_L.render("Super Quantum Party", True, (255,255,0))
+        s.blit(title, title.get_rect(center=(s.get_width()//2, 50)))
 
         for i in range(4):
             y=180+i*45
