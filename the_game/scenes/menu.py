@@ -1,6 +1,5 @@
-import os
 import pygame, sys
-from settings import BLACK, WHITE, GREEN, MAP_FILES, MAP_THUMBS, RES_DIR
+from settings import BLACK, WHITE, GREEN, MAP_FILES, MAP_THUMBS
 from models.player import Player
 from ui import widgets                   
 from core.scene import Scene
@@ -17,8 +16,7 @@ class MenuScene(Scene):
         super().__init__(manager)
 
         # background image
-        bg_path = os.path.join(RES_DIR, "superquantumparty.png")
-        self.background = pygame.image.load(bg_path).convert_alpha()
+        self.background = pygame.image.load("resources/superquantumparty.png").convert_alpha()
 
         # ─── build UI ────────────────────────────────────────────────
         self.players_ui=[]
