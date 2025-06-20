@@ -52,6 +52,9 @@ class GameScene(Scene):
                 if hasattr(self, "cursor_target"):
                     self.active_node = self.cursor_target
                     self.edge_iter = itertools.cycle(self.g.successors(self.active_node))
+                    # Award a star if the node is of type 4
+                    if self.g.nodes[self.active_node].get("type") == 4:
+                        self.players[self.active_idx].add_stars(1)
 
         if e.type == pygame.QUIT:
             pygame.quit(); sys.exit()
@@ -110,3 +113,8 @@ class GameScene(Scene):
             f"Node {self.active_node}   |   {self.n_turns} turns total",
             True, BLACK)
         s.blit(txt, (10, 10))
+
+        # Display star count for each player
+        for i, p in enumerate(self.players):
+            info = self.font.render(f"{p.name}: {p.stars}★", True, BLACK)
+            s.blit(info, (10, 40 + i*20))
