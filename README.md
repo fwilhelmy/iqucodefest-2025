@@ -2,7 +2,11 @@
 
 This is the submission of the team QuantumETS1 for iQuCodeFest 2025!
 
-the game should be ran from the the_game folder directly.
+To run the game, first install the virtual environment with all the env, then run the command
+    ```bash
+    python -m the_game
+    ```
+    from the root repository
 
 #### Quantum Board Game Challenge Summary
 
