@@ -2,12 +2,13 @@
 
 This is the submission of the team QuantumETS1 for iQuCodeFest 2025!
 
+
 To run the game, first install the virtual environment with all the env (see setup and installation section), then run the command
     ```
     python -m the_game```
     from the root repository
 
-Quantum_mario_party.ipynb contient tout notre code directement en liens avec le calcul quantique
+**Quantum_mario_party.ipynb** contient tout notre code directement en liens avec le calcul quantique
 
 Voici la descriptions du fonctionnement:
 Chaque joueur choisi leur noms, le premier joueur doit être la personne dans le group avec la meilleur théorie quantique.
