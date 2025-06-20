@@ -21,10 +21,13 @@ class MenuScene(Scene):
         # ─── build UI ────────────────────────────────────────────────
         self.players_ui=[]
         order_opts=[1,2,3,4]
+        # Keep all drop downs vertically aligned
         for idx in range(4):
-            y=180+idx*45
-            name = TextInput((150,y,180,28), f"Player {idx+1}")
-            prio = DropDown((455+(idx*60), y,60,28), order_opts, idx+1)
+            y = 180 + idx * 45
+            name = TextInput((150, y, 180, 28), f"Player {idx + 1}")
+            # previously each dropdown was offset horizontally creating a
+            # diagonal pattern. Using a fixed x keeps the column aligned.
+            prio = DropDown((455, y, 60, 28), order_opts, idx + 1)
             self.players_ui.append((name, prio))
 
         self.turn_toggle = ToggleGroup((300,360), [10,15,20,25])
