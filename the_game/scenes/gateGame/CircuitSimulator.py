@@ -107,3 +107,30 @@ class CircuitSimulator:
         global qiskit_circuit, gate_history
         qiskit_circuit = create_empty_circuit()
         gate_history = [("H", 0), ("H", 1, "layer0")]
+
+    def get_probabilities(qc, noise_model=None, gate_history=None):
+        from qiskit.result import marginal_counts
+        if gate_history is not None:
+            # Ignore decoherence: ne pas appliquer d'erreur ni de noise_model
+            qc_copy = CircuitSimulator.build_circuit_with_decoh(gate_history, 0.0)
+        else:
+            try:
+                qc_copy = qc.copy()
+            except AttributeError:
+                qc_copy = QuantumCircuit.from_qasm_str(qc.qasm())
+            has_measure = any(instr[0].name == "measure" for instr in qc_copy.data)
+            if not has_measure:
+                qc_copy.measure(0, 0)
+                qc_copy.measure(1, 1)
+        sim = AerSimulator()
+        # Ne pas passer noise_model ici !
+        result = sim.run(qc_copy, shots=32768).result()
+        counts = result.get_counts()
+        # Normalize to probabilities
+        total = sum(counts.values())
+        probs = {k: v / total for k, v in counts.items()}
+        # Ensure all 2-bit states are present
+        for state in ["00", "01", "10", "11"]:
+            if state not in probs:
+                probs[state] = 0.0
+        return probs

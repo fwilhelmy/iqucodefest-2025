@@ -39,6 +39,7 @@ class GateScene(Scene):
         self.drag_offset = (0,0)
         self.drag_pos = (0,0)
         self.measurement_result = None
+        self.measurement_probs = None
         self.font = pygame.font.SysFont(None, 32)
         self.WIDTH = WIDTH
         self.HEIGHT = HEIGHT
@@ -80,6 +81,7 @@ class GateScene(Scene):
                 percent = self.get_decoherence_percent()
                 noise_model = CircuitSimulator.apply_decoherence_noise(self.qiskit_circuit, percent)
                 self.measurement_result = CircuitSimulator.apply_circuit(self.qiskit_circuit, noise_model=noise_model, gate_history=self.gate_history)
+                # Ne pas mettre à jour self.measurement_probs ici !
         elif event.type == pygame.MOUSEBUTTONUP:
             if self.dragging_gate:
                 mx, my = event.pos
@@ -126,6 +128,10 @@ class GateScene(Scene):
                 placed_gates = [g for g in self.gate_history[2:] if g[0] != "DECOH"]
                 if len(placed_gates) > 0 and len(placed_gates) % 4 == 0:
                     self.gate_history.append(("DECOH", None))
+                # Met à jour les probabilités après chaque placement de porte
+                percent = self.get_decoherence_percent()
+                noise_model = CircuitSimulator.apply_decoherence_noise(self.qiskit_circuit, percent)
+                self.measurement_probs = CircuitSimulator.get_probabilities(self.qiskit_circuit, noise_model=noise_model, gate_history=self.gate_history)
                 self.dragging_gate = None
                 self.drag_pos = (0,0)
         elif event.type == pygame.MOUSEMOTION:
@@ -153,6 +159,8 @@ class GateScene(Scene):
         if self.measurement_result:
             txt = self.font.render(f"Measured: {self.measurement_result}", True, (0,0,0))
             screen.blit(txt, (self.WIDTH-300, self.HEIGHT-140))
+        if self.measurement_probs:
+            GameUI.draw_probability_table(screen, self.font, self.measurement_probs, self.WIDTH, self.HEIGHT)
         if self.dragging_gate:
             mx, my = self.drag_pos
             pygame.draw.rect(screen, self.GATE_COLORS[self.dragging_gate], (mx-40, my-20, 80, 40))
