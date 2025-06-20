@@ -53,6 +53,18 @@ To set up your environment:
     pip install -r requirements.txt
     ```
 
+### Running the Pygame Prototype
+
+After installing the dependencies, run the demo from the repository root:
+
+```bash
+python the_game/main.py
+```
+
+This launches the menu screen.  Selecting a map uses ``importlib`` to load
+modules from ``the_game/maps``; running the script from the root directory
+ensures those imports succeed.
+
 For detailed setup instructions and troubleshooting, refer to `python_project_setup_guide.md`.
 
 ---
