@@ -1,7 +1,7 @@
 import pygame, sys
-from settings import WIDTH, HEIGHT, WHITE, BLACK, YELLOW
-from core.scene import Scene
-from ui.widgets import Button
+from the_game.settings import WIDTH, HEIGHT, WHITE, BLACK, YELLOW
+from the_game.core.scene import Scene
+from the_game.ui.widgets import Button
 
 class WinnerScene(Scene):
     def __init__(self, manager, players):

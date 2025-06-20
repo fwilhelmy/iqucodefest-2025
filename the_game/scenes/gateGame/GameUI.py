@@ -93,3 +93,28 @@ class GameUI:
                 screen.blit(txt, (x - 10, y - 10))
             gate_idx += 1
             layer += 1
+
+    @staticmethod
+    def draw_probability_table(screen, font, probs, width, height):
+        # Dessine un graphique à barres comme dans IBM composer
+        bar_width = 50
+        bar_gap = 30
+        base_x = width // 2 - (2 * (bar_width + bar_gap))
+        base_y = height - 250
+        max_height = 120
+        # Axes
+        pygame.draw.line(screen, (200,200,200), (base_x-20, base_y), (base_x+4*(bar_width+bar_gap), base_y), 2)
+        pygame.draw.line(screen, (200,200,200), (base_x-20, base_y), (base_x-20, base_y-max_height-10), 2)
+        # Barres
+        for i, state in enumerate(["00", "01", "10", "11"]):
+            prob = probs.get(state, 0)
+            bar_h = int(prob * max_height)
+            x = base_x + i * (bar_width + bar_gap)
+            y = base_y - bar_h
+            pygame.draw.rect(screen, (100,180,255), (x, y, bar_width, bar_h))
+            # Pourcentage
+            pct_txt = font.render(f"{int(prob*100)}%", True, (0,0,0))
+            screen.blit(pct_txt, (x+5, y-25))
+            # Label état
+            label_txt = font.render(state, True, (0,0,0))
+            screen.blit(label_txt, (x+10, base_y+10))

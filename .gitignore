@@ -2,3 +2,10 @@
 venv
 
 __pycache__
+the_game/scenes/__pycache__/game.cpython-312.pyc
+the_game/scenes/__pycache__/menu.cpython-312.pyc
+the_game/ui/__pycache__/widgets.cpython-312.pyc
+the_game/models/__pycache__/player.cpython-312.pyc
+*.pyc
+the_game/core/__pycache__/scene.cpython-312.pyc
+the_game/__pycache__/settings.cpython-312.pyc

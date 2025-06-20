@@ -1,8 +1,13 @@
 import pygame, sys, random
+from the_game.quantum_dice import quantum_walk_roll
 import networkx as nx
-from settings import WIDTH, HEIGHT, WHITE, BLACK, GREEN
-from core.scene import Scene
-from ui.widgets import Button
+from the_game.settings import WIDTH, HEIGHT, WHITE, BLACK, GREEN
+from the_game.core.scene import Scene
+from the_game.ui.widgets import Button
+
+# Default radius used when drawing nodes at a zoom level of 1.0.  Smaller
+# nodes make crowded maps easier to read.
+BASE_NODE_RADIUS = 20
 
 # colour palette for node types
 TYPE_COLOUR = {
@@ -31,9 +36,12 @@ class GameScene(Scene):
         super().__init__(manager)
         self.players = sorted(players, key=lambda p: p.order)
         self.n_turns = n_turns  # remaining turns
+        self.map_module = map_module
 
         # ── build graph ────────────────────────────────────────────────
         self.g: nx.DiGraph = map_module.build_graph()
+        # remember original edge directions so the board can be reset
+        self._base_edges = list(self.g.edges())
         self.start_node = list(self.g.nodes)[0]
 
         # assign basic sprites/colours and starting positions
@@ -84,10 +92,53 @@ class GameScene(Scene):
         self.branch_options = []
         self.branch_index = 0
 
+    def _check_star(self, node_id, player):
+        """Handle star collection when ``player`` lands on ``node_id``."""
+        if self.g.nodes[node_id].get("type") == 4:
+            player.add_stars(1)
+            self.g.nodes[node_id]["type"] = 1
+            candidates = [
+                n for n, d in self.g.nodes(data=True)
+                if d.get("type") == 1 and n != node_id
+            ]
+        if candidates:
+            new_star = random.choice(candidates)
+            self.g.nodes[new_star]["type"] = 4
+
+    # ── board manipulation based on minigame results ────────────────
+    def apply_measurement(self, result: str | None):
+        """Apply measurement outcome from the gate minigame to the board."""
+        # reset edges to their original configuration
+        self.g.remove_edges_from(list(self.g.edges()))
+        self.g.add_edges_from(self._base_edges)
+
+        if not result or result == "00":
+            return
+
+        if result == "11":
+            reversed_edges = [(v, u) for u, v in self._base_edges]
+            self.g.remove_edges_from(list(self.g.edges()))
+            self.g.add_edges_from(reversed_edges)
+            return
+
+        # result is 01 or 10
+        restrict_first = result == "01"
+        for n, data in list(self.g.nodes(data=True)):
+            if data.get("type") == 3:
+                succ = sorted(self.g.successors(n))
+                if len(succ) >= 2:
+                    edge_to_remove = succ[0] if restrict_first else succ[1]
+                    if self.g.has_edge(n, edge_to_remove):
+                        self.g.remove_edge(n, edge_to_remove)
+
     def _end_move(self):
         current = self.moving_player.position
-        if self.g.nodes[current].get("type") == 4:
-            self.moving_player.add_stars(1)
+        node_type = self.g.nodes[current].get("type")
+        if node_type == 1:
+            available = ["X", "Y", "Z", "SX", "H", "SWAP", "CNOT"]
+            for _ in range(random.randint(1, 4)):
+                gate = random.choice(available)
+                self.moving_player.add_gates(gate)
         self.moving_player = None
         self.steps_remaining = 0
         self.pending_rolls.clear()
@@ -95,20 +146,23 @@ class GameScene(Scene):
         if self.active_idx == 0:
             self.n_turns -= 1
             if self.n_turns <= 0:
-                from scenes.winner import WinnerScene
+                from the_game.scenes.winner import WinnerScene
                 self.manager.go_to(WinnerScene(self.manager, self.players))
             else:
                 try:
-                    from scenes.gate import GateScene
+                    from the_game.scenes.gate import GateScene
                     # Passe la liste des joueurs telle quelle, sans tri supplémentaire
-                    self.manager.go_to(GateScene(self.manager, self.players))
+                    self.manager.go_to(GateScene(
+                        self.manager, self.players, self.n_turns, self.map_module,
+                        previous_scene=self
+                    ))
                 except Exception as e:
                     print(f"Erreur lors de la transition vers GateScene : {e}")
                     raise
 
     def _roll_one_die(self):
         """Roll a single die and store the result."""
-        value = random.randint(1, 6)
+        value = quantum_walk_roll()
         # play dice roll sound
         self.dice_sound.play()
         self.pending_rolls.append(value)
@@ -125,30 +179,39 @@ class GameScene(Scene):
 
     def handle_event(self, e):
         if e.type == pygame.KEYDOWN and e.key == pygame.K_ESCAPE:
-            from scenes.menu import MenuScene
+            from the_game.scenes.menu import MenuScene
             self.manager.go_to(MenuScene(self.manager))
         elif self.moving_player is None:
             roll_keys = (pygame.K_SPACE, pygame.K_RETURN, pygame.K_r)
             if self.roll_button.handle_event(e) or (e.type == pygame.KEYDOWN and e.key in roll_keys):
                 self._roll_one_die()
         elif self.awaiting_choice and e.type == pygame.KEYDOWN:
-            if e.key in (pygame.K_RETURN, pygame.K_SPACE):
+            if e.key in (pygame.K_LEFT, pygame.K_a):
+                self.branch_index = (self.branch_index - 1) % len(self.branch_options)
+            elif e.key in (pygame.K_RIGHT, pygame.K_d):
+                self.branch_index = (self.branch_index + 1) % len(self.branch_options)
+            elif e.key in (pygame.K_RETURN, pygame.K_SPACE):
                 next_node = self.branch_options[self.branch_index]
                 self.moving_player.position = next_node
+                self._check_star(next_node, self.moving_player)
                 self.steps_remaining -= 1
                 self.awaiting_choice = False
                 self.move_timer = self.MOVE_DELAY
                 if self.steps_remaining <= 0:
                     self._end_move()
-            elif e.key == pygame.K_MINUS:
-                self.zoom = self._clamp_zoom(self.zoom - self.ZOOM_STEP)
-            elif e.key == pygame.K_EQUALS:
-                self.zoom = self._clamp_zoom(self.zoom + self.ZOOM_STEP)
-            elif e.key == pygame.K_LEFT:
-                self.branch_index = (self.branch_index - 1) % len(self.branch_options)
-            elif e.key == pygame.K_RIGHT:
-                self.branch_index = (self.branch_index + 1) % len(self.branch_options)
-        elif e.type == pygame.QUIT:
+            return
+
+        if self.moving_player is None:
+            if e.type == pygame.KEYDOWN and e.key in (pygame.K_SPACE, pygame.K_RETURN):
+                self._roll_one_die()
+            if self.roll_button.handle_event(e):
+                self._roll_one_die()
+
+
+        if self.roll_button.handle_event(e):
+            self._roll_one_die()
+
+        if e.type == pygame.QUIT:
             pygame.quit(); sys.exit()
 
         
@@ -174,6 +237,7 @@ class GameScene(Scene):
                     self.branch_index = 0
                 else:
                     self.moving_player.position = succ[0]
+                    self._check_star(succ[0], self.moving_player)
                     self.steps_remaining -= 1
                     self.move_timer = self.MOVE_DELAY
                     if self.steps_remaining <= 0:
@@ -207,7 +271,7 @@ class GameScene(Scene):
             x = x * self.zoom + self.cam_x
             y = y * self.zoom + self.cam_y
             col  = TYPE_COLOUR[data["type"]]
-            radius = max(10, int(30 * self.zoom))
+            radius = max(8, int(BASE_NODE_RADIUS * self.zoom))
             pygame.draw.circle(s, col, (x, y), radius)
             pygame.draw.circle(s, BLACK, (x, y), radius, max(1, int(3 * self.zoom)))
 
@@ -234,24 +298,22 @@ class GameScene(Scene):
         self._draw_players(s)
 
     def _draw_players(self, s):
-        offsets = [(-15,-40), (15,-40), (-15,-60), (15,-60)]
+        # Draw each player centred on their current node
         for idx, p in enumerate(self.players):
             x, y = self.g.nodes[p.position]["pos"]
             x = x * self.zoom + self.cam_x
             y = y * self.zoom + self.cam_y
-            dx, dy = offsets[idx % len(offsets)]
-            dx *= self.zoom; dy *= self.zoom
             if p.sprite:
                 img = p.sprite
                 if self.zoom != 1.0:
                     size = int(img.get_width() * self.zoom), int(img.get_height() * self.zoom)
                     img = pygame.transform.smoothscale(img, size)
-                r = img.get_rect(center=(x+dx, y+dy))
+                r = img.get_rect(center=(x, y))
                 s.blit(img, r)
             else:
-                pygame.draw.circle(s, p.color, (int(x+dx), int(y+dy)), int(12*self.zoom))
+                pygame.draw.circle(s, p.color, (int(x), int(y)), int(12*self.zoom))
             if idx == self.active_idx:
-                pygame.draw.circle(s, GREEN, (int(x+dx), int(y+dy)), int(14*self.zoom), max(1, int(2*self.zoom)))
+                pygame.draw.circle(s, GREEN, (int(x), int(y)), int(14*self.zoom), max(1, int(2*self.zoom)))
 
     def draw(self, s):
         s.fill(WHITE)
@@ -288,6 +350,6 @@ class GameScene(Scene):
                 ("["+n+"]" if i==self.branch_index else n)
                 for i,n in enumerate(self.branch_options)
             ]
-            msg = "Choose path: " + " ".join(opts) + "  (\u2190/\u2192+Enter)"
+            msg = "Choose path: " + " ".join(opts) + "  (<-/->+Enter)"
             img = self.font.render(msg, True, BLACK)
             s.blit(img, (10, HEIGHT - 30))
