@@ -91,8 +91,9 @@ class GateScene(Scene):
                 gate_layer = max(0, len(self.gate_history) - 2)
                 drop_x = base_x + (gate_layer+2)*60
                 dropped = False
+                base_y = 100  # Correction pour aligner avec le circuit
                 for q in range(2):
-                    y = 150 + q*60
+                    y = base_y + q*60
                     if drop_x-20 < mx < drop_x+20 and y-20 < my < y+20:
                         if self.dragging_gate == "CNOT":
                             control = q
