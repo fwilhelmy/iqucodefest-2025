@@ -83,7 +83,6 @@ class GameScene(Scene):
         self.branch_index = 0
 
     def _end_move(self):
-        """Finish the current player's move and handle turn logic."""
         current = self.moving_player.position
         if self.g.nodes[current].get("type") == 4:
             self.moving_player.add_stars(1)
@@ -92,14 +91,18 @@ class GameScene(Scene):
         self.pending_rolls.clear()
         self.active_idx = (self.active_idx + 1) % len(self.players)
         if self.active_idx == 0:
-            # If all players have had their turn, reduce the turn count
             self.n_turns -= 1
             if self.n_turns <= 0:
                 from scenes.winner import WinnerScene
                 self.manager.go_to(WinnerScene(self.manager, self.players))
             else:
-                print("BATTTTTTLEEEE!!!")
-                # TODO SWITCH TO QUANTUM BATTLE SCENE
+                try:
+                    from scenes.gate import GateScene
+                    # Passe la liste des joueurs telle quelle, sans tri supplémentaire
+                    self.manager.go_to(GateScene(self.manager, self.players))
+                except Exception as e:
+                    print(f"Erreur lors de la transition vers GateScene : {e}")
+                    raise
 
     def _roll_one_die(self):
         """Roll a single die and store the result."""
