@@ -9,6 +9,7 @@ class Player:
     def get_name(self):       return self.name
     def get_position(self):   return self.position
     def set_turn_priority(self, order): self.order = order
+    def set_sprite(self, surf): self.sprite = surf
     def __init__(self, slot):
         self.name: str = ""
         self.position: int = 0                      # Space ID
@@ -18,6 +19,8 @@ class Player:
         self.slot = slot
         self.name = ""
         self.order = slot + 1
+        self.sprite = None           # pygame Surface used when drawing
+        self.color  = (0,0,0)        # fallback colour for pawn
 
     # ---- movement ----
     def move(self, steps:int, board:'Board'):
