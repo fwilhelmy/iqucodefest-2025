@@ -141,7 +141,7 @@ class GameScene(Scene):
             pygame.draw.circle(s, BLACK, (x,y), 30, 3)
 
             if data["type"] in (1,2):
-                label = str(data["value"])
+                label = str(data.get("value", ""))
             elif data["type"] == 3:
                 label = "⊕"
             else:  # type 4
