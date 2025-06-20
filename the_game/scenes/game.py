@@ -64,6 +64,11 @@ class GameScene(Scene):
         self.font = pygame.font.SysFont(None, 28)
         self.big  = pygame.font.SysFont(None, 42)
 
+        # background image for the board
+        self.background = pygame.image.load(
+            "resources/boardgame_background.png"
+        ).convert_alpha()
+
         # button used to roll the dice one at a time
         self.roll_button = Button("Roll", (WIDTH - 80, HEIGHT - 40))
         # load dice roll sound
@@ -317,6 +322,9 @@ class GameScene(Scene):
 
     def draw(self, s):
         s.fill(WHITE)
+        # draw board background centred without scaling
+        bg_rect = self.background.get_rect(center=s.get_rect().center)
+        s.blit(self.background, bg_rect)
         self._draw_edges(s)
         self._draw_nodes(s)
 
