@@ -145,7 +145,7 @@ def create_classical_random_state() -> QuantumCircuit:
                         classical (separable) state.
     """
     
-    params = [np.random.rand(2) * 2 * np.pi for _ in range(6)]
+    params = np.random.uniform(0, 2 * np.pi, 6)
     qc = QuantumCircuit(2)
 
     qc.u(params[0], params[1], params[2], 0)  # U gate on qubit 0
@@ -237,7 +237,6 @@ def measure_bell_pair(
     Returns:
         str: The measurement result string ('00', '01', etc.). Number of shots to use (shot=1).
     """
-    # TODO CHECK WITH CHARLES BUT MORE CONFIDENT ABOUT THIS ONE
 
     # Apply basis transformations to the circuit & measure the qubits
     circuit = apply_basis_transformation(circuit, 0, alice_basis)
@@ -279,8 +278,8 @@ def run_bell_test_measurements(
     """
     
     list_measurements_results = []
-    list_chosen_bases_alice = [] # Alice key
-    list_chosen_bases_bob = [] # Bob key
+    list_chosen_bases_alice = []
+    list_chosen_bases_bob = []
 
     for bell_pair in list_bell_pairs:
         # Random local choice of measurement bases for Alice and Bob
@@ -398,7 +397,7 @@ def calculate_chsh_value(
         float: The calculated CHSH Bell parameter S (absolute value).
     """
 
-    assert len(alice_bases) != 2 and len(bob_bases) != 2
+    assert len(alice_bases) == 2 and len(bob_bases) == 2
 
     # Extract the correlation values for the required basis pairs
     e_a1_b1 = correlations.get((alice_bases[0], bob_bases[0]), 0.0)
@@ -470,7 +469,7 @@ def run_bell_test(
     return bell_chsh
 
 
-def demonstrate_bell_inequality():
+def demonstrate_bell_inequality(n_tests=1000):
     """
     Demonstrate the Bell inequality test with detailed explanation and test cases.
 
@@ -483,19 +482,16 @@ def demonstrate_bell_inequality():
     print("---------------------------------------------------------")
     print("Running Bell test with different states...\n")
     # --------------------------------------------------------
-    # TODO: Student implementation goes here
-    # TODO: only create the list of circuits, the rest is already implemented
-
     # Test 1: Ideal entangled Bell state
     print("Test 1: Ideal Bell state |Ψ-⟩ = (|01⟩ - |10⟩)/√2  - Singlet state used in original E91")
-    list_bell_circuits = None # TODO
+    list_bell_circuits = [create_bell_pair_singlet_state() for _ in range(n_tests)]
     
     run_bell_test(list_bell_circuits, "Ideal Bell state")
 
     # --------------------------------------------------------
     # Test 2: Classical (non-entangled) state
     print("\nTest 2: Classical state (no entanglement)")
-    list_classical_circuits = None # TODO
+    list_classical_circuits = [create_classical_random_state() for _ in range(n_tests)]
     
     run_bell_test(list_classical_circuits, "Classical state")
 
@@ -504,7 +500,15 @@ def demonstrate_bell_inequality():
     print("\nTest 3: Entangled state with eavesdropping")
     print(f"Eve compromises {EVE_PERCENTAGE_COMPROMISED*100}% of Bell pairs, reducing the Bell parameter.")
     
-    list_eve_circuits = None # TODO
+    n_compromised = int(n_tests * EVE_PERCENTAGE_COMPROMISED)
+    list_eve_circuits = []
+    for i in range(n_tests):
+        # Create a Bell pair and simulate Eve's eavesdropping
+        bell_pair = create_bell_pair_singlet_state()
+        list_eve_circuits.append(
+            create_eavesdropped_state(bell_pair) 
+            if i < n_compromised else 
+            bell_pair)
     
     run_bell_test(list_eve_circuits, "Eavesdropped state")
 
@@ -611,7 +615,7 @@ def visualize_bell_test_results(correlations, chsh_value, title="Bell Test Resul
 # ------ Main function -----------------------------------
 def main():
     # Test both standard Bell inequality demo and comparison of measurement methods
-    demonstrate_bell_inequality()
+    demonstrate_bell_inequality(1000)
 
 
 
