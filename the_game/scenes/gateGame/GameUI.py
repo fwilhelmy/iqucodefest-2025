@@ -14,8 +14,8 @@ class GameUI:
     def draw_skip_button(screen, font, width, height):
         btn_rect = pygame.Rect(width - 350, height - 300, 120, 50)  # juste sous la mesure
         pygame.draw.rect(screen, (200, 100, 100), btn_rect)
-        txt = font.render("Skip", True, (0, 0, 0))
-        screen.blit(txt, (btn_rect.x + 30, btn_rect.y + 10))
+        txt = font.render("End Turn", True, (0, 0, 0))
+        screen.blit(txt, (btn_rect.x + 10, btn_rect.y + 10))
         return btn_rect
 
     @staticmethod
@@ -30,9 +30,9 @@ class GameUI:
             if players[current_player] == player:
                 pygame.draw.rect(screen, (0, 255, 0), rect, 4)
             pygame.draw.rect(screen, GATE_COLORS[gate], rect)
-            # Use smaller font for CNOT and SWAP
+            # Use same font, smaller size, not bold for CNOT and SWAP
             if gate in ("CNOT", "SWAP"):
-                small_font = pygame.font.SysFont("Arial", max(10, font.get_height() - 6))
+                small_font = pygame.font.SysFont(None, 24)
                 txt = small_font.render(f"{gate} ({player.gates.get(gate, 0)})", True, (0,0,0))
             else:
                 txt = font.render(f"{gate} ({player.gates.get(gate, 0)})", True, (0,0,0))
