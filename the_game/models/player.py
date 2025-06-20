@@ -1,19 +1,21 @@
-from dataclasses import dataclass, field
-from collections import Counter
-
-@dataclass
 class Player:
-    name: str
-    position: int = 0                      # Space ID
-    gates: Counter = field(default_factory=Counter)
 
     # ---- getters / setters ----
-    def get_gates(self):      return dict(self.gates)
+    def get_gates(self):      return self.gates
     def add_gates(self, gate:str, n:int=1): self.gates[gate] += n
+    def set_gates(self, new_gates:dict):
+        self.gates = new_gates
     def set_name(self, new):  self.name = new
     def get_name(self):       return self.name
     def get_position(self):   return self.position
     def set_turn_priority(self, order): self.order = order
+    def __init__(self, slot):
+        self.name: str = ""
+        self.position: int = 0                      # Space ID
+        self.gates: dict = {'H':0,'X':0,'Y':0,'Z':0}  # gate counts
+        self.slot = slot
+        self.name = ""
+        self.order = slot + 1
 
     # ---- movement ----
     def move(self, steps:int, board:'Board'):

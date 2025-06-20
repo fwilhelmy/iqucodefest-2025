@@ -1,20 +1,31 @@
-# the_game/main.py
-from board  import Board
-from space  import Space
+import pygame, sys
+from settings import WIDTH, HEIGHT, FPS
+from ui.widgets import init_fonts
+from core.scene import SceneManager
+from scenes.menu import MenuScene
 
-def build_demo():
-    return Board([
-        Space(0,"Start", None,[1],      (0,0)),
-        Space(1,"Blue",  None,[2],      (1,0)),
-        Space(2,"Fork",  None,[3,4],    (2,0)),
-        Space(3,"Red",   None,[4],      (2,1)),
-        Space(4,"Blue",  None,[5],      (3,0)),
-        Space(5,"Goal", "END",[],       (4,0)),
-    ])
+# ─── initialise Pygame & fonts ─────────────────────────────────────────
+pygame.init()
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+clock  = pygame.time.Clock()
+pygame.display.set_caption("Super Quantum Party")
 
-def play_demo():
-    
+# Fonts must be created *after* pygame.init()
+FONT_L = pygame.font.SysFont(None, 72)
+FONT_M = pygame.font.SysFont(None, 32)
+FONT_S = pygame.font.SysFont(None, 24)
+init_fonts(FONT_L, FONT_M, FONT_S)          # give them to the widgets
 
-if __name__ == "__main__":
-    board = build_demo()
-    print(board.draw_ascii())
+# ─── boot the first scene ──────────────────────────────────────────────
+manager = SceneManager(MenuScene(None))     # create scene without manager
+manager.scene.manager = manager             # then patch back-reference
+
+# ─── main loop ─────────────────────────────────────────────────────────
+while True:
+    dt = clock.tick(FPS) / 1000
+    for event in pygame.event.get():
+        manager.handle_event(event)
+
+    manager.update(dt)
+    manager.draw(screen)
+    pygame.display.flip()
