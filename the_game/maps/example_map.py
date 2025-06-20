@@ -1,13 +1,17 @@
-"""
-Human-friendly definition of one board.
+"""Example board data.
 
-Editing rule of thumb:
-• One dictionary entry  →  one node
-• One tuple in EDGES    →  one directed arrow
-• POS keeps the on-screen coordinates; use any pixels you like.
+This module loads ``example_map.yml`` at runtime so the map can be edited
+without touching the Python source.  If the YAML file is missing, the
+fallback definitions below are used.
 """
+
+from __future__ import annotations
+
+import os
 
 import networkx as nx
+
+from .yaml_map import build_graph_from_yaml
 
 # ── 1)  Nodes ──────────────────────────────────────────────────────────
 NODES = {
@@ -39,6 +43,10 @@ POS = {
 
 def build_graph() -> nx.DiGraph:
     """Return a fully attributed NetworkX graph ready for the GameScene."""
+    yaml_path = os.path.join(os.path.dirname(__file__), "example_map.yml")
+    if os.path.exists(yaml_path):
+        return build_graph_from_yaml(yaml_path)
+
     g = nx.DiGraph()
     for n, data in NODES.items():
         g.add_node(n, **data, pos=POS[n])
