@@ -16,7 +16,7 @@ class MenuScene(Scene):
         super().__init__(manager)
 
         # background image
-        self.background = pygame.image.load("resources/superquantumparty.png").convert_alpha()
+        self.background = pygame.image.load("resources/superquantumparty.png")
 
         # ── background music ────────────────────────────────────────────
         pygame.mixer.music.load("resources/audio/menu_music.mp3")
@@ -29,11 +29,11 @@ class MenuScene(Scene):
         for idx in range(4):
             y=180+idx*45
             name = TextInput((150,y,180,28), f"Player {idx+1}")
-            prio = DropDown((455+(idx*60), y,60,28), order_opts, idx+1)
+            prio = DropDown((455, y,60,28), order_opts, idx+1)
             self.players_ui.append((name, prio))
 
-        self.turn_toggle = ToggleGroup((300,360), [10,15,20,25])
-        self.map_select  = ImageSelect(MAP_THUMBS, (80, 450))
+        self.turn_toggle = ToggleGroup((300,420), [10,15,20,25])
+        self.map_select  = ImageSelect(MAP_THUMBS, (264, 450))
         self.play_btn    = Button("Play!", (900,500))
 
         self.all_players = [Player(i) for i in range(4)]
@@ -69,17 +69,20 @@ class MenuScene(Scene):
 
     def draw(self, s):
         # draw background centered without scaling
-        bg_rect = self.background.get_rect(center=s.get_rect().center)
-        s.blit(self.background, bg_rect)
+        # Scale the background image to be less zoomed in while preserving its 16:9 aspect ratio
+        screen_w, screen_h = s.get_size()
+        bg_image = pygame.transform.smoothscale(self.background, s.get_size())
+        bg_rect = bg_image.get_rect(center=(screen_w // 2, screen_h // 2))
+        s.blit(bg_image, bg_rect)
 
         # translucent panel for menu elements
-        panel = pygame.Surface((980, 420), pygame.SRCALPHA)
-        panel.fill((255, 255, 255, 220))
-        s.blit(panel, (60, 120))
-        pygame.draw.rect(s, BLACK, pygame.Rect(60, 120, 980, 420), 2)
+        # panel = pygame.Surface((980, 420), pygame.SRCALPHA)
+        # panel.fill((255, 255, 255, 220))
+        # s.blit(panel, (60, 120))
+        # pygame.draw.rect(s, BLACK, pygame.Rect(60, 120, 980, 420), 2)
 
-        title = widgets.FONT_L.render("Super Quantum Party", True, GREEN)
-        s.blit(title, title.get_rect(center=(s.get_width()//2, 150)))
+        title = widgets.FONT_L.render("Super Quantum Party", True, BLACK)
+        s.blit(title, title.get_rect(center=(s.get_width()//2, 50)))
 
         for i in range(4):
             y=180+i*45
@@ -87,8 +90,8 @@ class MenuScene(Scene):
             s.blit(widgets.FONT_S.render("Turn Priority:",True,BLACK),(350,y+4))
 
         for n,d in self.players_ui: n.draw(s); d.draw(s)
-        s.blit(widgets.FONT_M.render("Number of turns :",True,BLACK),(65,350))
+        s.blit(widgets.FONT_M.render("Number of turns :",True,BLACK),(65,400))
         self.turn_toggle.draw(s)
-        s.blit(widgets.FONT_M.render("Map selection :",True,BLACK),(65,400))
+        s.blit(widgets.FONT_M.render("Map selection :",True,BLACK),(65,450))
         self.map_select.draw(s)
         self.play_btn.draw(s)
