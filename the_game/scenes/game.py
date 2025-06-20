@@ -15,7 +15,7 @@ TYPE_COLOUR = {
 class GameScene(Scene):
     """
     Renders a directed graph.  Players can walk along outgoing edges
-    with ← / → (cycle) and ↵ (confirm) for demo purposes.
+    with left/right arrows (cycle) and Enter (confirm) for demo purposes.
     """
     CAM_SPEED = 400  # pixels per second
     MOVE_SPEED = 200  # speed for walking animation (px/s)
@@ -208,9 +208,9 @@ class GameScene(Scene):
             if data["type"] in (1,2):
                 label = str(data.get("value", ""))
             elif data["type"] == 3:
-                label = "⊕"
+                label = "X"  # previously used ⊕ which may not render
             else:  # type 4
-                label = "★"
+                label = "*"  # previously used ★ which may not render
 
             img = self.big.render(label, True, BLACK)
             s.blit(img, img.get_rect(center=(x,y)))
@@ -257,7 +257,7 @@ class GameScene(Scene):
         hud = f"Turn: {turn_name}"
         if self.last_roll:
             name,d1,d2,total = self.last_roll
-            hud += f"  |  {name} rolled {d1}+{d2}→{total}"
+            hud += f"  |  {name} rolled {d1}+{d2}->{total}"  # replaced Unicode arrow
         txt = self.font.render(hud, True, BLACK)
         s.blit(txt, (10, 10))
         turns_txt = self.font.render(f"Turns left: {self.n_turns}", True, BLACK)
@@ -266,7 +266,7 @@ class GameScene(Scene):
         # Display stars and gate counts for each player
         for i, p in enumerate(self.players):
             gates = ", ".join(f"{g}:{c}" for g,c in p.gates.items())
-            text = f"{p.name}: {p.stars}★ | {gates}"
+            text = f"{p.name}: {p.stars}* | {gates}"  # replaced Unicode star
             info = self.font.render(text, True, BLACK)
             s.blit(info, (10, 40 + i*20))
 
