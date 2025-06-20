@@ -23,11 +23,9 @@ class MenuScene(Scene):
         order_opts=[1,2,3,4]
         # Keep all drop downs vertically aligned
         for idx in range(4):
-            y = 180 + idx * 45
-            name = TextInput((150, y, 180, 28), f"Player {idx + 1}")
-            # previously each dropdown was offset horizontally creating a
-            # diagonal pattern. Using a fixed x keeps the column aligned.
-            prio = DropDown((455, y, 60, 28), order_opts, idx + 1)
+            y=180+idx*45
+            name = TextInput((150,y,180,28), f"Player {idx+1}")
+            prio = DropDown((455+(idx*60), y,60,28), order_opts, idx+1)
             self.players_ui.append((name, prio))
 
         self.turn_toggle = ToggleGroup((300,360), [10,15,20,25])
@@ -79,12 +77,12 @@ class MenuScene(Scene):
 
         for i in range(4):
             y=180+i*45
-            s.blit(widgets.FONT_S.render(f"Player {i+1} :",True,BLACK),(40,y+4))
+            s.blit(widgets.FONT_S.render(f"Player {i+1} :",True,BLACK),(65,y+4))
             s.blit(widgets.FONT_S.render("Turn Priority:",True,BLACK),(350,y+4))
 
         for n,d in self.players_ui: n.draw(s); d.draw(s)
-        s.blit(widgets.FONT_M.render("Number of turns :",True,BLACK),(50,350))
+        s.blit(widgets.FONT_M.render("Number of turns :",True,BLACK),(65,350))
         self.turn_toggle.draw(s)
-        s.blit(widgets.FONT_M.render("Map selection :",True,BLACK),(50,400))
+        s.blit(widgets.FONT_M.render("Map selection :",True,BLACK),(65,400))
         self.map_select.draw(s)
         self.play_btn.draw(s)
