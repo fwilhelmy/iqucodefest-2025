@@ -98,55 +98,55 @@ nodes:
   N97: {type: 1}
   N98: {type: 1}
   N99: {type: 1}
-  N100:{type: 1}
-  N101:{type: 1}
-  N102:{type: 1}
-  N103:{type: 1}
-  N104:{type: 1}
-  N105:{type: 1}
-  N106:{type: 1}
-  N107:{type: 1}
-  N108:{type: 1}
-  N109:{type: 1}
-  N110:{type: 1}
-  N111:{type: 1}
-  N112:{type: 1}
-  N113:{type: 1}
-  N114:{type: 1}
-  N115:{type: 1}
-  N116:{type: 1}
-  N117:{type: 1}
-  N118:{type: 1}
-  N119:{type: 1}
-  N120:{type: 1}
-  N121:{type: 1}
-  N122:{type: 1}
-  N123:{type: 1}
-  N124:{type: 1}
-  N125:{type: 1}
-  N126:{type: 1}
-  N127:{type: 1}
-  N128:{type: 1}
-  N129:{type: 1}
-  N130:{type: 1}
-  N131:{type: 1}
-  N132:{type: 1}
-  N133:{type: 1}
-  N134:{type: 1}
-  N135:{type: 1}
-  N136:{type: 1}
-  N137:{type: 1}
-  N138:{type: 1}
-  N139:{type: 1}
-  N140:{type: 1}
-  N141:{type: 1}
-  N142:{type: 1}
-  N143:{type: 1}
-  N144:{type: 1}
-  N145:{type: 1}
-  N146:{type: 1}
-  N147:{type: 1}
-  N148:{type: 1}
+  N100: {type: 1}
+  N101: {type: 1}
+  N102: {type: 1}
+  N103: {type: 1}
+  N104: {type: 1}
+  N105: {type: 1}
+  N106: {type: 1}
+  N107: {type: 1}
+  N108: {type: 1}
+  N109: {type: 1}
+  N110: {type: 1}
+  N111: {type: 1}
+  N112: {type: 1}
+  N113: {type: 1}
+  N114: {type: 1}
+  N115: {type: 1}
+  N116: {type: 1}
+  N117: {type: 1}
+  N118: {type: 1}
+  N119: {type: 1}
+  N120: {type: 1}
+  N121: {type: 1}
+  N122: {type: 1}
+  N123: {type: 1}
+  N124: {type: 1}
+  N125: {type: 1}
+  N126: {type: 1}
+  N127: {type: 1}
+  N128: {type: 1}
+  N129: {type: 1}
+  N130: {type: 1}
+  N131: {type: 1}
+  N132: {type: 1}
+  N133: {type: 1}
+  N134: {type: 1}
+  N135: {type: 1}
+  N136: {type: 1}
+  N137: {type: 1}
+  N138: {type: 1}
+  N139: {type: 1}
+  N140: {type: 1}
+  N141: {type: 1}
+  N142: {type: 1}
+  N143: {type: 1}
+  N144: {type: 1}
+  N145: {type: 1}
+  N146: {type: 1}
+  N147: {type: 1}
+  N148: {type: 1}
 
 edges:
   - [N1, N41]
