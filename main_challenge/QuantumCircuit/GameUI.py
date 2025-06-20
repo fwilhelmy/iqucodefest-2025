@@ -78,6 +78,13 @@ class GameUI:
                 pygame.draw.line(screen, (0, 0, 0), (x - 10, y2 - 10), (x + 10, y2 + 10), 2)
                 pygame.draw.line(screen, (0, 0, 0), (x - 10, y2 + 10), (x + 10, y2 - 10), 2)
                 pygame.draw.line(screen, (0, 0, 0), (x, y1), (x, y2), 2)
+            elif g[0] == "DECOH":
+                # Draw decoherence gate as a gray box with "D"
+                for q in range(2):
+                    y = base_y + q * 60
+                    pygame.draw.rect(screen, (120,120,120), (x - 20, y - 20, 40, 40))
+                    txt = font.render("D", True, (255,255,255))
+                    screen.blit(txt, (x - 8, y - 10))
             else:
                 gate, qubit = g[:2]
                 y = base_y + qubit * 60
