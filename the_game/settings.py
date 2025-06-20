@@ -7,6 +7,7 @@ BLACK = (0, 0, 0)
 GREY  = (60, 60, 60)
 GREEN = (25, 180, 40)
 WHITE = (255, 255, 255)
+YELLOW = (255, 215, 0)
 
 # Paths to map thumbnails / backgrounds
 # Map modules must be importable using their full package path. The previous
