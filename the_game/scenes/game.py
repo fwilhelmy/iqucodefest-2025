@@ -50,6 +50,12 @@ class GameScene(Scene):
         self.last_roll = None
         self.pending_rolls = []          # store dice rolled so far
 
+        # Rolling animation state
+        self.rolling = False             # is a die currently rolling?
+        self.roll_elapsed = 0.0          # seconds spent animating
+        self.roll_value = 1              # current face shown during animation
+        self.roll_anim_time = 0.6        # how long the animation lasts
+
         self.font = pygame.font.SysFont(None, 28)
         self.big  = pygame.font.SysFont(None, 42)
 
@@ -79,7 +85,7 @@ class GameScene(Scene):
         """Roll a single die and store the result."""
         value = random.randint(1, 6)
         self.pending_rolls.append(value)
-
+        
         # When both dice are rolled, move the player
         if len(self.pending_rolls) == 2:
             player = self.players[self.active_idx]
@@ -97,6 +103,13 @@ class GameScene(Scene):
                 self.manager.go_to(WinnerScene(self.manager, self.players))
                 return
 
+    def _start_roll_animation(self):
+        """Begin the die rolling animation if not already rolling."""
+        if not self.rolling:
+            self.rolling = True
+            self.roll_elapsed = 0.0
+            self.roll_value = random.randint(1, 6)
+
     def handle_event(self, e):
         if e.type == pygame.KEYDOWN:
             if e.key == pygame.K_ESCAPE:          # back to menu
@@ -104,7 +117,7 @@ class GameScene(Scene):
                 self.manager.go_to(MenuScene(self.manager))
 
             elif e.key in (pygame.K_SPACE, pygame.K_RETURN):
-                self._roll_one_die()
+                self._start_roll_animation()
 
             elif e.key == pygame.K_MINUS:
                 self.zoom = self._clamp_zoom(self.zoom - self.ZOOM_STEP)
@@ -112,7 +125,7 @@ class GameScene(Scene):
                 self.zoom = self._clamp_zoom(self.zoom + self.ZOOM_STEP)
 
         if self.roll_button.handle_event(e):
-            self._roll_one_die()
+            self._start_roll_animation()
 
         if e.type == pygame.QUIT:
             pygame.quit(); sys.exit()
@@ -124,6 +137,14 @@ class GameScene(Scene):
         if keys[pygame.K_RIGHT]: self.cam_x -= spd
         if keys[pygame.K_UP]:    self.cam_y += spd
         if keys[pygame.K_DOWN]:  self.cam_y -= spd
+
+        if self.rolling:
+            self.roll_elapsed += dt
+            if self.roll_elapsed >= self.roll_anim_time:
+                self.rolling = False
+                self._roll_one_die()
+            else:
+                self.roll_value = random.randint(1, 6)
 
     # ── drawing helpers ────────────────────────────────────────────────
     def _draw_edges(self, s):
@@ -227,3 +248,11 @@ class GameScene(Scene):
 
         # Roll button
         self.roll_button.draw(s)
+
+        # Dice roll animation display
+        if self.rolling:
+            img = self.big.render(str(self.roll_value), True, BLACK)
+            rect = img.get_rect(center=(WIDTH//2, HEIGHT//2))
+            pygame.draw.rect(s, WHITE, rect.inflate(20, 20))
+            pygame.draw.rect(s, BLACK, rect.inflate(20, 20), 3)
+            s.blit(img, rect)
