@@ -19,6 +19,7 @@ Vous tombez alors dans un jeux similaire à super mario party, seulement version
 - Si vous passer devant une étoile, vous gagnez une étoile dans votre inventaire.
 - À chaque intersection, vous devez choisir le chemin sur lequel vous voulez allez. pour ce faire, utiliser les flèches sur votre clavier d'ordinateur et cliquer par la suite sur espace.
 - à la fin de chaque tour, un mini-jeux apparait ! ce mini jeux permet de naviguer les différentes superposition de la carte (le graph avec noeuds). si l'état final mesuré est 01 ou 10, alors les "rivière" et les "portes" du niveau sont mesurer et ils "collapsent" vers seulement un chemin possible. Si l'état 11 est mesurer, la carte collapse sa superposition et le graph dirigé inverse sa direction. les joueurs doivent stratégiquement placer leur portes qu'ils ont collecter de sorte à obtenir l'état quantique qu'ils veulent. L'objectif étant de désavantager les autres d'obtenir une étoile tout en essayant de s'avantager.
+- !!Présentement, il faut cliquer sur le bouton "measurement" avant de cliquer sur continuer si vous voulez que la carte change!!
 - Attention ! Ajouter trop de gates rend le circuit inutilisable !
 - Le gagnant est le joueur qui réussi à collecter le plus d'étoile et le plus de gates.
 
