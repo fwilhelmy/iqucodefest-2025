@@ -17,6 +17,8 @@ class GameScene(Scene):
     Renders a directed graph.  Players can walk along outgoing edges
     with ← / → (cycle) and ↵ (confirm) for demo purposes.
     """
+    CAM_SPEED = 400  # pixels per second
+
     def __init__(self, manager, players, n_turns, map_module):
         super().__init__(manager)
         self.players = sorted(players, key=lambda p: p.order)
@@ -48,6 +50,10 @@ class GameScene(Scene):
 
         # button used to roll the dice one at a time
         self.roll_button = Button("Roll", (WIDTH - 80, HEIGHT - 40))
+
+        # Camera offset when drawing large maps
+        self.cam_x = 0
+        self.cam_y = 0
 
     # ── simple navigation demo ─────────────────────────────────────────
     def _move_player(self, player, steps):
@@ -100,13 +106,21 @@ class GameScene(Scene):
         if e.type == pygame.QUIT:
             pygame.quit(); sys.exit()
 
-    def update(self, dt): pass    # no physics yet
+    def update(self, dt):
+        keys = pygame.key.get_pressed()
+        spd = self.CAM_SPEED * dt
+        if keys[pygame.K_LEFT]:  self.cam_x += spd
+        if keys[pygame.K_RIGHT]: self.cam_x -= spd
+        if keys[pygame.K_UP]:    self.cam_y += spd
+        if keys[pygame.K_DOWN]:  self.cam_y -= spd
 
     # ── drawing helpers ────────────────────────────────────────────────
     def _draw_edges(self, s):
         for u, v in self.g.edges:
             x1, y1 = self.g.nodes[u]["pos"]
             x2, y2 = self.g.nodes[v]["pos"]
+            x1 += self.cam_x; y1 += self.cam_y
+            x2 += self.cam_x; y2 += self.cam_y
             pygame.draw.line(s, BLACK, (x1, y1), (x2, y2), 3)
             # little arrow-head
             vx, vy = x2 - x1, y2 - y1
@@ -121,6 +135,7 @@ class GameScene(Scene):
     def _draw_nodes(self, s):
         for n, data in self.g.nodes(data=True):
             x, y = data["pos"]
+            x += self.cam_x; y += self.cam_y
             col  = TYPE_COLOUR[data["type"]]
             pygame.draw.circle(s, col, (x,y), 30)
             pygame.draw.circle(s, BLACK, (x,y), 30, 3)
@@ -142,6 +157,7 @@ class GameScene(Scene):
         offsets = [(-15,-40), (15,-40), (-15,-60), (15,-60)]
         for idx, p in enumerate(self.players):
             x, y = self.g.nodes[p.position]["pos"]
+            x += self.cam_x; y += self.cam_y
             dx, dy = offsets[idx % len(offsets)]
             if p.sprite:
                 r = p.sprite.get_rect(center=(x+dx, y+dy))
