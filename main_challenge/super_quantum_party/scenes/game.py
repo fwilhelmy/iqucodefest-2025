@@ -1,9 +1,9 @@
 import pygame, sys, random
-from the_game.quantum_dice import quantum_walk_roll
+from super_quantum_party.quantum_dice import quantum_walk_roll
 import networkx as nx
-from the_game.settings import WIDTH, HEIGHT, WHITE, BLACK, GREEN
-from the_game.core.scene import Scene
-from the_game.ui.widgets import Button
+from super_quantum_party.settings import WIDTH, HEIGHT, WHITE, BLACK, GREEN
+from super_quantum_party.core.scene import Scene
+from super_quantum_party.ui.widgets import Button
 
 # Default radius used when drawing nodes at a zoom level of 1.0.  Smaller
 # nodes make crowded maps easier to read.
@@ -66,13 +66,13 @@ class GameScene(Scene):
 
         # background image for the board
         self.background = pygame.image.load(
-            "resources/boardgame_background.png"
+            "super_quantum_party/resources/boardgame_background.png"
         ).convert_alpha()
 
         # button used to roll the dice one at a time
         self.roll_button = Button("Roll", (WIDTH - 80, HEIGHT - 40))
         # load dice roll sound
-        self.dice_sound = pygame.mixer.Sound("resources/audio/dice_roll.mp3")
+        self.dice_sound = pygame.mixer.Sound("super_quantum_party/resources/audio/dice_roll.mp3")
 
         # Camera offset when drawing large maps
         self.cam_x = 0
@@ -151,11 +151,11 @@ class GameScene(Scene):
         if self.active_idx == 0:
             self.n_turns -= 1
             if self.n_turns <= 0:
-                from the_game.scenes.winner import WinnerScene
+                from super_quantum_party.scenes.winner import WinnerScene
                 self.manager.go_to(WinnerScene(self.manager, self.players))
             else:
                 try:
-                    from the_game.scenes.gate import GateScene
+                    from super_quantum_party.scenes.gate import GateScene
                     # Passe la liste des joueurs telle quelle, sans tri supplémentaire
                     self.manager.go_to(GateScene(
                         self.manager, self.players, self.n_turns, self.map_module,
@@ -184,7 +184,7 @@ class GameScene(Scene):
 
     def handle_event(self, e):
         if e.type == pygame.KEYDOWN and e.key == pygame.K_ESCAPE:
-            from the_game.scenes.menu import MenuScene
+            from super_quantum_party.scenes.menu import MenuScene
             self.manager.go_to(MenuScene(self.manager))
         elif self.moving_player is None:
             roll_keys = (pygame.K_SPACE, pygame.K_RETURN, pygame.K_r)

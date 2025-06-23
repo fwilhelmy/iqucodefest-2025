@@ -1,9 +1,9 @@
 import pygame, sys
-from the_game.settings import BLACK, WHITE, GREEN, MAP_FILES, MAP_THUMBS, WIDTH, HEIGHT
-from the_game.models.player import Player
-from the_game.ui import widgets                   
-from the_game.core.scene import Scene
-from the_game.scenes.game import GameScene  
+from super_quantum_party.settings import BLACK, WHITE, GREEN, MAP_FILES, MAP_THUMBS, WIDTH, HEIGHT
+from super_quantum_party.models.player import Player
+from super_quantum_party.ui import widgets                   
+from super_quantum_party.core.scene import Scene
+from super_quantum_party.scenes.game import GameScene  
    
 from importlib import import_module
 
@@ -18,11 +18,11 @@ class MenuScene(Scene):
         super().__init__(manager)
 
         # background image
-        self.background = pygame.image.load("resources/superquantumparty.png")
+        self.background = pygame.image.load("super_quantum_party/resources/superquantumparty.png")
         self.background = pygame.transform.scale(self.background, (WIDTH, HEIGHT))
 
         # ── background music ────────────────────────────────────────────
-        pygame.mixer.music.load("resources/audio/menu_music.mp3")
+        pygame.mixer.music.load("super_quantum_party/resources/audio/menu_music.mp3")
         pygame.mixer.music.play(-1)
         pygame.mixer.music.set_volume(0.5)  # Set volume to 50%
 
