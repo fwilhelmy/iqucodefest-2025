@@ -1,6 +1,6 @@
 # Super Quantum Party
 
-![screenshot](resources/superquantumparty.png)
+![screenshot](main_challenge\super_quantum_party\resources\banner.png)
 
 ## 1. Overview
 
@@ -10,11 +10,29 @@ The main challenge was to redesign a classic board game by integrating quantum c
 
 ## 2. Game concept & quantum mechanics
 
-* Pygame board built from a YAML‑described directed graph
-* Quantum dice powered by Qiskit implementing a quantum walk
-* Collect quantum gates and stars as you traverse the board
-* Gate minigame lets players apply operations; measurement outcomes alter the board's edges
-* After the last turn, a results scene ranks players by stars and collected gates
+The prototype reimagines a **Mario-Party–style board game** where every classic action is “quantum-fied.” Players race around a tile-based map, collect Stars, and leverage quantum gates to reshape the board's configuration.
+
+### 3.2 Game Loop  
+1. **Player Setup**  
+   * Each participant enters a name and you choose the order of playing.  
+2. **Quantum Roll (Movement Phase)**  
+   * Press **Space** to roll the **quantum die** (implemented as a quantum random walk).  
+   * Your token advances by the measured outcome.  
+3. **Board Interactions**  
+   * **Blue Tiles** Grant **1–4 quantum gates** (stored in inventory).  
+   * **Star Tiles** Passing a Star automatically adds one Star to your inventory.  
+   * **Intersections** Choose paths with the keyboard arrows, then confirm with **Space**.  
+4. **Mini-Game (End-of-Turn Superposition Phase)**  
+   * A sub-game appears, showing the quantum circuit composer.  
+   * Players place gates they’ve collected onto this circuit to steer the measurement and hinder rivals’ path to Stars while enhancing your own. 
+   * Loading too many gates into the circuit will cause decoherence!!  
+   * **Important:** click **Measurement** *before* Continue to commit the collapse and change the map configuration.
+5. **Victory Condition**  
+   * After a predefined number of turns, the player with the **most Stars** *(primary)* and **most remaining gates** *(tiebreaker)* wins.
+
+**Pro-Tip:** The more intelligently you schedule gate placements, the higher your odds of forcing a board state favorable to your strategy!
+
+![screenshot](main_challenge\super_quantum_party\resources\editeur_2.JPG)
 
 ## 3. Installation & quick‑start
 
@@ -32,36 +50,37 @@ source .venv/bin/activate  # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### Running the game
-From the repository root:
-```bash
-python -m the_game
-```
-
 ## 4. Usage examples
 
 ### Build your own map
 ```python
-from the_game.maps.yaml_map import build_graph_from_yaml
-my_map = build_graph_from_yaml("the_game/maps/new_map.yml")
+from super_quantum_party.maps.yaml_map import build_graph_from_yaml
+my_map = build_graph_from_yaml("super_quantum_party/maps/new_map.yml")
 ```
 
-### Launching the prototype
+### Running the game
+From the repository root:
 ```bash
-$ python -m the_game
->>> switched to MenuScene
+$ python -m super_quantum_party
 ```
 
 ## 5. Contributing
 
-We welcome pull requests for bug fixes, docs and new board ideas. Fork the repo, create a feature branch and open a PR.
+We welcome pull requests for bug fixes, docs and new ideas! Fork the repo, create a feature branch and open a PR.
 
 ## 6. License & acknowledgments
 
-This project is released under the [MIT License](LICENSE). We thank the iQuCodeFest 2025 organizers and backers—Polytechnique Montréal, Institut quantique / Université de Sherbrooke, University of Calgary, École de technologie supérieure (ÉTS), Quantum City and PINQ²—for making the event possible.
+This project is released under the [MIT License](LICENSE).
+
+**Acknowledgments**  
+- iQuCodeFest 2025 organizers and backers — Polytechnique Montréal, Institut quantique / Université de Sherbrooke, University of Calgary, École de technologie supérieure (ÉTS), Quantum City, and PINQ² — for hosting an outstanding event.  
+- IBM Quantum / Qiskit community for providing cloud access to real quantum hardware.  
+- We acknowledge the use of **OpenAI ChatGPT** for rapid brainstorming, code-snippet generation, and documentation assistance during the competition.
+
+If you reuse or extend our code, please credit the sources above.
 
 ---
 
 ### About Quantum ÉTS
 
-Quantum ÉTS is a growing community of students exploring quantum information science. [Learn more](https://TODO.example.com).
+Quantum ÉTS is a growing community of students exploring quantum information science. [Learn more](https://quantumets.etsmtl.ca/).
