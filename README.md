@@ -1,6 +1,6 @@
 # Super Quantum Party
 
-![screenshot](main_challenge\super_quantum_party\resources\banner.png)
+![screenshot](main_challenge/super_quantum_party/resources/banner.png)
 
 ## 1. Overview
 
@@ -32,7 +32,7 @@ The prototype reimagines a **Mario-Party–style board game** where every classi
 
 **Pro-Tip:** The more intelligently you schedule gate placements, the higher your odds of forcing a board state favorable to your strategy!
 
-![screenshot](main_challenge\super_quantum_party\resources\editeur_2.JPG)
+![screenshot](main_challenge/super_quantum_party/resources/editeur_2.JPG)
 
 ## 3. Installation & quick‑start
 
